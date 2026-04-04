@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-
+import { useNavigate } from "react-router-dom";
 /*
   CounsellorLogin.jsx  –  Fateh Education Platform
   ─────────────────────────────────────────────────────
@@ -16,6 +16,7 @@ export default function CounsellorLogin() {
   const [form, setForm]     = useState({ name: "", id: "", email: "" });
   const [errors, setErrors] = useState({});
   const [status, setStatus] = useState("idle"); // idle | loading | success | error
+  const navigate = useNavigate();
 
   /* ── Escape clears error state ── */
   useEffect(() => {
@@ -52,14 +53,14 @@ export default function CounsellorLogin() {
     setStatus("loading");
     await new Promise((r) => setTimeout(r, 1800)); // simulate API
 
-    if (form.id.toUpperCase() === "FATH-2024") {
-      console.log("✅ Counsellor login payload:", form);
-      setStatus("success");
-    } else {
-      console.warn("❌ Auth failed for ID:", form.id);
-      setStatus("error");
-      setTimeout(() => setStatus("idle"), 3000);
-    }
+if (form.id.toUpperCase() === "FATH-2024") {
+    setStatus("success");
+    // Redirect after the success animation finishes
+    setTimeout(() => {
+        navigate('/counsellor-dashboard');
+    }, 2000);
+}
+    
   };
 
   return (

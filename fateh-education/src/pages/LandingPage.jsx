@@ -148,14 +148,25 @@ function PathCard({ type }) {
   const navigate = useNavigate();
   const [hovered, setHovered] = useState(false);
   const isStudent = type === "student";
+  
   const hoverStyle = hovered
     ? isStudent ? css.glassCardHoverStudent : css.glassCardHoverCounsellor
     : {};
+
+  // Helper function to handle navigation
+  const handleNavigation = () => {
+    if (isStudent) {
+      navigate('/student');
+    } else {
+      navigate('/counsellor-login'); // Matches the route you set for the login page
+    }
+  };
 
   return (
     <div
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
+      onClick={handleNavigation} // Makes the whole card clickable
       style={{
         ...css.glassCard,
         ...hoverStyle,
@@ -229,18 +240,22 @@ function PathCard({ type }) {
         ))}
       </div>
 
-      {/* CTA */}
+      {/* CTA Button */}
       <button 
-      onClick={() => navigate(isStudent ? '/student' : '/counsellor')}
-      style={{
-        ...(isStudent ? css.btnStudent : css.btnCounsellor),
-        width: "100%", padding: 15, borderRadius: 18, color: "#fff",
-        fontWeight: 600, fontSize: 15, fontFamily: "'Space Grotesk', sans-serif",
-        cursor: "pointer", border: "none",
-        display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
-        transform: hovered ? "scale(1.03)" : "scale(1)",
-        transition: "all 0.3s ease",
-      }}>
+        onClick={(e) => {
+          e.stopPropagation(); // Prevents double-triggering since the parent div also has an onClick
+          handleNavigation();
+        }}
+        style={{
+          ...(isStudent ? css.btnStudent : css.btnCounsellor),
+          width: "100%", padding: 15, borderRadius: 18, color: "#fff",
+          fontWeight: 600, fontSize: 15, fontFamily: "'Space Grotesk', sans-serif",
+          cursor: "pointer", border: "none",
+          display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
+          transform: hovered ? "scale(1.03)" : "scale(1)",
+          transition: "all 0.3s ease",
+        }}
+      >
         {isStudent ? "Begin My Journey" : "Enter Dashboard"}
         <span style={{ display: "inline-block", transform: hovered ? "translateX(5px)" : "translateX(0)", transition: "transform 0.3s ease" }}>→</span>
       </button>

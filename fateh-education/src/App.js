@@ -4,6 +4,7 @@ import LandingPage from './pages/LandingPage';
 import StudentView from './pages/StudentView';
 import CounsellorBookingFlow from './pages/CounsellorBookingFlow';
 import CounsellorLogin from './pages/CounsellorLogin';
+import CounsellorDashboard from './pages/CounsellorDashboard';
 
 function App() {
   return (
@@ -16,6 +17,10 @@ function App() {
         <Route path="/student" element={<StudentView />} />
         <Route path="/book" element={<CounsellorBookingFlow isOpen={true} />} />
         <Route path="/counsellor-login" element={<CounsellorLogin />} />
+        <Route 
+  path="/counsellor-dashboard" 
+  element={<CounsellorDashboard onLogout={() => window.location.href = '/'} />} 
+/>
       </Routes>
     </Router>
   );
