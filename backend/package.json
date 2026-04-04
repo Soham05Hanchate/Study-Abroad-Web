@@ -1,10 +1,13 @@
 {
   "name": "backend",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "AI voice counsellor backend",
+  "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node server.js",
+    "dev": "node server.js",
+    "test": "echo \"No tests configured\"",
+    "seed:mongo": "node scripts/seedMongo.js"
   },
   "keywords": [],
   "author": "",
@@ -14,6 +17,8 @@
     "cors": "^2.8.6",
     "dotenv": "^17.4.0",
     "express": "^5.2.1",
+    "mongodb": "3.7",
+    "mongoose": "^8.23.0",
     "openai": "^6.33.0"
   }
 }

@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI Voice Counsellor</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <main class="app">
+      <header class="top">
+        <h1>AI Voice Counsellor</h1>
+        <p>Speak or type; conversation stays in your browser and is sent to the server each turn.</p>
+      </header>
+
+      <section id="chat" class="chat" aria-live="polite"></section>
+
+      <div id="loadingBar" class="loading-bar hidden" role="status" aria-live="polite">
+        <span class="loading-dot"></span>
+        <span class="loading-dot"></span>
+        <span class="loading-dot"></span>
+        <span class="loading-text">Waiting for response…</span>
+      </div>
+
+      <section class="controls">
+        <div class="input-row input-row--lang">
+          <select id="languageSelect" aria-label="Response and recognition language">
+            <option value="English" selected>English</option>
+            <option value="Hindi">Hindi</option>
+            <option value="Marathi">Marathi</option>
+          </select>
+        </div>
+
+        <div class="input-row">
+          <input id="messageInput" type="text" placeholder="Type your message…" autocomplete="off" />
+          <button id="sendBtn" type="button">Send</button>
+        </div>
+
+        <div class="action-row">
+          <button id="voiceBtn" type="button">Start Speaking</button>
+          <button id="extractBtn" type="button">End Conversation</button>
+        </div>
+
+        <p id="status" class="status">Ready.</p>
+      </section>
+
+      <section class="profile-panel">
+        <h2>Extracted student data (English JSON)</h2>
+        <pre id="profileOutput">Use “End Conversation” after chatting.</pre>
+      </section>
+    </main>
+
+    <script src="/app.js"></script>
+  </body>
+</html>
