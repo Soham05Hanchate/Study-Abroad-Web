@@ -837,12 +837,45 @@ export default function StudentView() {
               {/* Left: Orb + controls */}
               <div className="fade-in" style={{ flex: "0 0 auto", width: "min(100%, 340px)", borderRadius: 24, padding: "32px 24px", background: T.glass, border: T.glassBorder, boxShadow: T.glassShadow, display: "flex", flexDirection: "column", alignItems: "center", gap: 24 }}>
                 <AIOrb active={callState === "active"} />
-                <div className="controls-row" style={{ display: "flex", gap: 12, width: "100%", justifyContent: "center" }}>
+                <div
+                  className="controls-row"
+                  style={{
+                    display: "flex",
+                    flexDirection: callState === "ended" ? "column" : "row",
+                    gap: 12,
+                    width: "100%",
+                    justifyContent: "center",
+                  }}
+                >
                   {callState === "idle" && (
                     <button onClick={handleStartCall} style={{ flex: 1, padding: "14px 20px", borderRadius: 14, background: "linear-gradient(135deg, #059669, #047857)", color: "#fff", fontWeight: 700, cursor: "pointer", border: "none" }}>Start Call</button>
                   )}
                   {callState === "active" && (
                     <button onClick={handleEndCall} style={{ flex: 1, padding: "14px 20px", borderRadius: 14, background: "linear-gradient(135deg, #dc2626, #b91c1c)", color: "#fff", fontWeight: 700, border: "none", cursor: "pointer" }}>End Call</button>
+                  )}
+                  {callState === "ended" && (
+                    <button
+                      type="button"
+                      onClick={() =>
+                        navigate("/scholarships", {
+                          state: { gpa: phaseData.gpa || dashData?.gpa || undefined },
+                        })
+                      }
+                      style={{
+                        width: "100%",
+                        padding: "14px 20px",
+                        borderRadius: 14,
+                        background: "linear-gradient(135deg, #4f46e5, #6366f1)",
+                        color: "#fff",
+                        fontWeight: 700,
+                        cursor: "pointer",
+                        border: "none",
+                        fontFamily: T.fontBody,
+                        boxShadow: "0 0 20px rgba(99,102,241,0.35)",
+                      }}
+                    >
+                      View scholarship matches
+                    </button>
                   )}
                 </div>
               </div>
@@ -1015,8 +1048,9 @@ export default function StudentView() {
                 <p style={{ fontSize: 14, color: "rgba(148,163,184,0.6)", maxWidth: 460, margin: "0 auto 28px", lineHeight: 1.65 }}>Speak directly with a Fateh expert counsellor who will review your profile and map out your roadmap.</p>
                 
                 {/* REPLACED: Redirection Button */}
-                <button 
-                  onClick={() => navigate('/book')} 
+                <button
+                  type="button"
+                  onClick={() => navigate("/book")}
                   style={{ padding: "16px 36px", borderRadius: 16, background: "linear-gradient(135deg, #2563eb, #1d4ed8)", color: "#fff", fontSize: 15, fontWeight: 700, cursor: "pointer", border: "none", boxShadow: "0 0 24px rgba(37,99,235,0.5)" }}
                 >
                   Book a Counselling Session With Us!
