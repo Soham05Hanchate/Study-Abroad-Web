@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-
+import CounsellorBookingFlow from "./CounsellorBookingFlow";
 /* ═══════════════════════════════════════════════════════════════
    FATEH EDUCATION — Student View
    AI Voice Agent + Student Overview Dashboard
@@ -280,30 +280,23 @@ function DataRow({ label, value, highlight }) {
 }
 
 // ── Book Session Button ──
-function BookButton() {
-  const [booked, setBooked] = useState(false);
+function BookButton({ onOpen }) {
   return (
     <button
-      onClick={() => setBooked(true)}
+      onClick={onOpen} // This tells it to open the modal
       style={{
         display: "inline-flex", alignItems: "center", gap: 10,
         padding: "16px 36px", borderRadius: 16, border: "none", cursor: "pointer",
-        background: booked ? "linear-gradient(135deg, #059669, #047857)" : "linear-gradient(135deg, #2563eb, #1d4ed8)",
-        color: "#fff", fontSize: 15, fontWeight: 700, fontFamily: T.fontBody,
-        animation: booked ? "none" : "bookGlow 2.5s ease-in-out infinite",
-        transition: "all 0.3s ease", position: "relative", zIndex: 1,
+        background: "linear-gradient(135deg, #2563eb, #1d4ed8)",
+        color: "#fff", fontSize: 15, fontWeight: 700,
+        boxShadow: "0 0 24px rgba(37,99,235,0.5)",
+        transition: "all 0.3s ease",
       }}
-      onMouseEnter={(e) => { if (!booked) e.currentTarget.style.transform = "scale(1.05) translateY(-2px)"; }}
-      onMouseLeave={(e) => { e.currentTarget.style.transform = "scale(1) translateY(0)"; }}
     >
-      {booked ? "✅  Booking confirmed!" : (
-        <>
-          Book a Session with Us!
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M5 12h14M12 5l7 7-7 7" />
-          </svg>
-        </>
-      )}
+      Book a Session with Us!
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+        <path d="M5 12h14M12 5l7 7-7 7" />
+      </svg>
     </button>
   );
 }
@@ -312,6 +305,7 @@ function BookButton() {
 // MAIN COMPONENT
 // ════════════════════════════════════════════════
 export default function StudentView() {
+  // 1. Removed bookingOpen state as we are redirecting now
   const [callState, setCallState] = useState("idle"); // idle | active | ended
   const [currentPhase, setCurrentPhase] = useState(0);
   const [phaseData, setPhaseData] = useState({});
@@ -320,6 +314,10 @@ export default function StudentView() {
   const [dashData, setDashData] = useState(null);
   const [returnCode, setReturnCode] = useState("");
   const [codeError, setCodeError] = useState("");
+  
+  // 2. Added the navigate hook for redirection
+  const navigate = useNavigate(); 
+  
   const [lang, setLang] = useState("EN");
   const [elapsed, setElapsed] = useState(0);
   const dashRef = useRef(null);
@@ -345,16 +343,13 @@ export default function StudentView() {
     setElapsed(0);
     setPhaseData({});
 
-    // Phase 1: fill after 2s
     phaseTimers.current.push(setTimeout(() => {
       setPhaseData((d) => ({ ...d, ...MOCK_DATA.phase1 }));
     }, 2000));
-    // Phase 2: start after 5s, fill at 7s
     phaseTimers.current.push(setTimeout(() => setCurrentPhase(2), 5000));
     phaseTimers.current.push(setTimeout(() => {
       setPhaseData((d) => ({ ...d, ...MOCK_DATA.phase2 }));
     }, 7000));
-    // Phase 3: start after 10s, fill at 12s
     phaseTimers.current.push(setTimeout(() => setCurrentPhase(3), 10000));
     phaseTimers.current.push(setTimeout(() => {
       setPhaseData((d) => ({ ...d, ...MOCK_DATA.phase3 }));
@@ -368,7 +363,7 @@ export default function StudentView() {
     const id = genID();
     setStudentID(id);
     setCallState("ended");
-    setCurrentPhase(4); // all phases done
+    setCurrentPhase(4); 
     const full = { id, ...MOCK_DATA.phase1, ...MOCK_DATA.phase2, ...MOCK_DATA.phase3, ...phaseData, score: 87, status: "Highly Qualified", date: new Date().toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" }) };
     setDashData(full);
     setTimeout(() => {
@@ -524,191 +519,37 @@ export default function StudentView() {
 
         <main style={{ position: "relative", zIndex: 1 }}>
 
-          {/* ════════════════════════════════════
-              SECTION 1 — VOICE AGENT
-          ════════════════════════════════════ */}
+          {/* ── SECTION 1 — VOICE AGENT ── */}
           <section className="hero-pad" style={{ maxWidth: 1200, margin: "0 auto", padding: "36px 28px 48px" }}>
-
-            {/* ── Returning user bar ── */}
+            {/* Returning user bar */}
             <div className="fade-in" style={{ marginBottom: 32, animationDelay: "0.05s" }}>
-              <div style={{
-                borderRadius: 16, padding: "14px 20px",
-                background: T.glass, backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)",
-                border: T.glassBorder, boxShadow: T.glassShadow,
-                display: "flex", alignItems: "center", flexWrap: "wrap", gap: 12,
-              }}>
+              <div style={{ borderRadius: 16, padding: "14px 20px", background: T.glass, backdropFilter: "blur(20px)", border: T.glassBorder, boxShadow: T.glassShadow, display: "flex", alignItems: "center", flexWrap: "wrap", gap: 12 }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 8, flex: "0 0 auto" }}>
-                  <span style={{ fontSize: 16 }}>🔑</span>
-                  <span style={{ fontSize: 13, color: "rgba(148,163,184,0.7)", fontFamily: T.fontBody }}>
-                    Already registered?
-                  </span>
+                  <span style={{ fontSize: 16 }}>🔑 Already registered?</span>
                 </div>
                 <div style={{ flex: 1, minWidth: 200, display: "flex", gap: 8 }}>
-                  <input
-                    value={returnCode}
-                    onChange={(e) => { setReturnCode(e.target.value); setCodeError(""); }}
-                    onKeyDown={(e) => e.key === "Enter" && handleReturnCode()}
-                    placeholder="Enter your unique code  e.g. FE-DEMO-2025"
-                    style={{
-                      flex: 1, background: "rgba(255,255,255,0.04)", border: codeError ? "1px solid rgba(239,68,68,0.5)" : "1px solid rgba(255,255,255,0.1)",
-                      borderRadius: 10, padding: "9px 14px", color: "#e2e8f0", fontSize: 13,
-                      fontFamily: T.fontBody, outline: "none", transition: "border 0.2s",
-                    }}
-                  />
-                  <button className="code-submit" onClick={handleReturnCode} style={{
-                    background: "rgba(37,99,235,0.25)", border: "1px solid rgba(59,130,246,0.35)",
-                    color: "#93c5fd", padding: "9px 18px", borderRadius: 10, cursor: "pointer",
-                    fontSize: 13, fontWeight: 600, fontFamily: T.fontBody, transition: "all 0.2s",
-                    whiteSpace: "nowrap",
-                  }}>
-                    Access →
-                  </button>
+                  <input value={returnCode} onChange={(e) => { setReturnCode(e.target.value); setCodeError(""); }} onKeyDown={(e) => e.key === "Enter" && handleReturnCode()} placeholder="Enter unique code" style={{ flex: 1, background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 10, padding: "9px 14px", color: "#e2e8f0", outline: "none" }} />
+                  <button className="code-submit" onClick={handleReturnCode} style={{ background: "rgba(37,99,235,0.25)", border: "1px solid rgba(59,130,246,0.35)", color: "#93c5fd", padding: "9px 18px", borderRadius: 10, cursor: "pointer", fontWeight: 600 }}>Access →</button>
                 </div>
-                {codeError && <span style={{ fontSize: 11, color: "#fca5a5", width: "100%", paddingLeft: 4 }}>{codeError}</span>}
               </div>
             </div>
 
-            {/* ── Page title ── */}
-            <div className="fade-in" style={{ marginBottom: 28, animationDelay: "0.1s" }}>
-              <div style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "4px 12px", borderRadius: 100, background: "rgba(37,99,235,0.1)", border: "1px solid rgba(59,130,246,0.2)", marginBottom: 12 }}>
-                <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#3b82f6", boxShadow: "0 0 8px #3b82f6", display: "inline-block" }} />
-                <span style={{ fontSize: 10, color: "#93c5fd", fontWeight: 600, letterSpacing: "0.12em", textTransform: "uppercase" }}>AI Voice Counselor</span>
-              </div>
-              <h1 style={{ fontFamily: T.font, fontWeight: 800, fontSize: "clamp(24px, 4vw, 42px)", color: "#fff", letterSpacing: "-0.03em", lineHeight: 1.1 }}>
-                Your Overseas Journey<br />
-                <span style={{ color: "#60a5fa" }}>Starts Here</span>
-              </h1>
-              <p style={{ marginTop: 10, fontSize: "clamp(13px, 1.5vw, 15px)", color: "rgba(148,163,184,0.6)", maxWidth: 480, lineHeight: 1.65 }}>
-                Our multilingual AI counselor will guide you through a quick conversation to build your personalized study abroad profile.
-              </p>
-            </div>
-
-            {/* ── Agent + Phases grid ── */}
             <div className="agent-grid" style={{ display: "flex", gap: 20, alignItems: "flex-start" }}>
-
               {/* Left: Orb + controls */}
-              <div className="fade-in" style={{
-                flex: "0 0 auto", width: "min(100%, 340px)",
-                borderRadius: 24, padding: "32px 24px",
-                background: T.glass, backdropFilter: "blur(24px)", WebkitBackdropFilter: "blur(24px)",
-                border: callState === "active" ? "1px solid rgba(59,130,246,0.3)" : T.glassBorder,
-                boxShadow: callState === "active" ? "0 0 40px rgba(37,99,235,0.15), " + T.glassShadow : T.glassShadow,
-                display: "flex", flexDirection: "column", alignItems: "center", gap: 24,
-                transition: "all 0.4s ease",
-                animationDelay: "0.15s",
-              }}>
-                {/* Status label */}
-                <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                  <div style={{
-                    width: 7, height: 7, borderRadius: "50%",
-                    background: callState === "active" ? "#ef4444" : callState === "ended" ? "#10b981" : "rgba(148,163,184,0.4)",
-                    boxShadow: callState === "active" ? "0 0 8px #ef4444" : callState === "ended" ? "0 0 8px #10b981" : "none",
-                    transition: "all 0.4s",
-                  }} />
-                  <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.1em", color: callState === "active" ? "#fca5a5" : callState === "ended" ? "#6ee7b7" : "rgba(148,163,184,0.5)" }}>
-                    {callState === "idle" ? "READY" : callState === "active" ? "LISTENING" : "SESSION COMPLETE"}
-                  </span>
-                </div>
-
-                {/* Orb */}
-                <div className="orb-wrap">
-                  <AIOrb active={callState === "active"} />
-                </div>
-
-                {/* Phase indicator */}
-                {callState !== "idle" && (
-                  <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-                    {[1, 2, 3].map((p) => (
-                      <div key={p} style={{ display: "flex", alignItems: "center", gap: 4 }}>
-                        <div style={{
-                          width: currentPhase > p ? 24 : currentPhase === p ? 24 : 6,
-                          height: 6, borderRadius: 3,
-                          background: currentPhase > p ? "#10b981" : currentPhase === p ? "#3b82f6" : "rgba(255,255,255,0.1)",
-                          transition: "all 0.4s ease",
-                        }} />
-                      </div>
-                    ))}
-                    {currentPhase <= 3 && (
-                      <span style={{ fontSize: 10, color: "rgba(148,163,184,0.5)", marginLeft: 4 }}>
-                        Phase {Math.min(currentPhase, 3)}/3
-                      </span>
-                    )}
-                  </div>
-                )}
-
-                {/* AI message */}
-                {callState === "active" && (
-                  <div style={{
-                    background: "rgba(37,99,235,0.08)", border: "1px solid rgba(59,130,246,0.15)",
-                    borderRadius: 12, padding: "10px 14px", textAlign: "center",
-                  }}>
-                    <p style={{ fontSize: 12, color: "rgba(200,213,255,0.7)", lineHeight: 1.5, fontStyle: "italic" }}>
-                      {currentPhase === 1 && '"Hello! I\'m your Fateh AI counselor. Could you please share your name and contact details?"'}
-                      {currentPhase === 2 && '"Great! Now tell me about your academic background and your goals for studying abroad..."'}
-                      {currentPhase === 3 && '"Almost done! Let\'s talk about your test preparation and financial readiness..."'}
-                    </p>
-                  </div>
-                )}
-
-                {/* Controls */}
+              <div className="fade-in" style={{ flex: "0 0 auto", width: "min(100%, 340px)", borderRadius: 24, padding: "32px 24px", background: T.glass, border: T.glassBorder, boxShadow: T.glassShadow, display: "flex", flexDirection: "column", alignItems: "center", gap: 24 }}>
+                <AIOrb active={callState === "active"} />
                 <div className="controls-row" style={{ display: "flex", gap: 12, width: "100%", justifyContent: "center" }}>
                   {callState === "idle" && (
-                    <button className="start-btn" onClick={handleStartCall} style={{
-                      flex: 1, padding: "14px 20px", borderRadius: 14, border: "none", cursor: "pointer",
-                      background: "linear-gradient(135deg, #059669, #047857)",
-                      boxShadow: "0 0 24px rgba(5,150,105,0.5), 0 4px 16px rgba(0,0,0,0.3)",
-                      color: "#fff", fontSize: 14, fontWeight: 700, fontFamily: T.fontBody,
-                      display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
-                      animation: "callPulse 2s ease-in-out infinite",
-                      transition: "transform 0.2s ease",
-                    }}>
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1-9.4 0-17-7.6-17-17 0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1L6.6 10.8z"/></svg>
-                      Start Call
-                    </button>
+                    <button onClick={handleStartCall} style={{ flex: 1, padding: "14px 20px", borderRadius: 14, background: "linear-gradient(135deg, #059669, #047857)", color: "#fff", fontWeight: 700, cursor: "pointer", border: "none" }}>Start Call</button>
                   )}
                   {callState === "active" && (
-                    <button className="end-btn" onClick={handleEndCall} style={{
-                      flex: 1, padding: "14px 20px", borderRadius: 14, border: "none", cursor: "pointer",
-                      background: "linear-gradient(135deg, #dc2626, #b91c1c)",
-                      boxShadow: "0 0 24px rgba(220,38,38,0.5), 0 4px 16px rgba(0,0,0,0.3)",
-                      color: "#fff", fontSize: 14, fontWeight: 700, fontFamily: T.fontBody,
-                      display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
-                      transition: "transform 0.2s ease",
-                    }}>
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1-9.4 0-17-7.6-17-17 0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1L6.6 10.8z"/></svg>
-                      End Call
-                    </button>
-                  )}
-                  {callState === "ended" && (
-                    <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "12px 20px", borderRadius: 14, background: "rgba(16,185,129,0.1)", border: "1px solid rgba(16,185,129,0.25)", width: "100%", justifyContent: "center" }}>
-                      <span style={{ fontSize: 16 }}>✅</span>
-                      <span style={{ fontSize: 13, color: "#6ee7b7", fontWeight: 600 }}>Session Complete</span>
-                    </div>
+                    <button onClick={handleEndCall} style={{ flex: 1, padding: "14px 20px", borderRadius: 14, background: "linear-gradient(135deg, #dc2626, #b91c1c)", color: "#fff", fontWeight: 700, border: "none", cursor: "pointer" }}>End Call</button>
                   )}
                 </div>
-
-                {/* Student ID after call */}
-                {studentID && callState === "ended" && (
-                  <div style={{ background: "rgba(37,99,235,0.1)", border: "1px solid rgba(59,130,246,0.25)", borderRadius: 12, padding: "12px 16px", width: "100%", textAlign: "center" }}>
-                    <div style={{ fontSize: 10, color: "rgba(148,163,184,0.5)", letterSpacing: "0.1em", marginBottom: 4 }}>YOUR STUDENT ID</div>
-                    <div style={{ fontSize: 16, fontWeight: 800, color: "#60a5fa", fontFamily: T.font, letterSpacing: "0.05em" }}>{studentID}</div>
-                    <div style={{ fontSize: 10, color: "rgba(148,163,184,0.4)", marginTop: 4 }}>Save this to access your profile later</div>
-                  </div>
-                )}
               </div>
 
               {/* Right: Extraction phases */}
-              <div className="phases-panel fade-in" style={{
-                flex: 1,
-                display: "flex", flexDirection: "column", gap: 12,
-                animationDelay: "0.2s",
-                opacity: callState === "idle" ? 0.5 : 1,
-                transition: "opacity 0.4s ease",
-              }}>
-                <div style={{ marginBottom: 4 }}>
-                  <h3 style={{ fontFamily: T.font, fontWeight: 700, fontSize: 15, color: "#fff", letterSpacing: "-0.01em" }}>Data Extraction</h3>
-                  <p style={{ fontSize: 12, color: "rgba(148,163,184,0.5)", marginTop: 2 }}>Real-time profile building across 3 phases</p>
-                </div>
+              <div className="phases-panel fade-in" style={{ flex: 1, display: "flex", flexDirection: "column", gap: 12 }}>
                 <PhasePanel phase={1} currentPhase={currentPhase} data={phaseData} />
                 <PhasePanel phase={2} currentPhase={currentPhase} data={phaseData} />
                 <PhasePanel phase={3} currentPhase={currentPhase} data={phaseData} />
@@ -716,151 +557,38 @@ export default function StudentView() {
             </div>
           </section>
 
-          {/* ════════════════════════════════════
-              SECTION 2 — STUDENT OVERVIEW
-          ════════════════════════════════════ */}
+          {/* ── SECTION 2 — STUDENT OVERVIEW ── */}
           {showDashboard && dashData && (
-            <section ref={dashRef} className="slide-in" style={{
-              maxWidth: 1200, margin: "0 auto", padding: "0 28px 60px",
-            }}>
-              {/* Divider */}
-              <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 32 }}>
-                <div style={{ flex: 1, height: 1, background: "linear-gradient(to right, transparent, rgba(59,130,246,0.3), transparent)" }} />
-                <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "6px 16px", borderRadius: 100, background: "rgba(37,99,235,0.1)", border: "1px solid rgba(59,130,246,0.2)" }}>
-                  <span style={{ fontSize: 12 }}>📋</span>
-                  <span style={{ fontSize: 11, color: "#93c5fd", fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase" }}>Student Overview</span>
-                </div>
-                <div style={{ flex: 1, height: 1, background: "linear-gradient(to left, transparent, rgba(59,130,246,0.3), transparent)" }} />
-              </div>
-
-              {/* Dashboard header */}
+            <section ref={dashRef} className="slide-in" style={{ maxWidth: 1200, margin: "0 auto", padding: "0 28px 60px" }}>
               <div style={{ marginBottom: 28, display: "flex", flexWrap: "wrap", alignItems: "flex-start", justifyContent: "space-between", gap: 20 }}>
                 <div>
-                  <p style={{ fontSize: 13, color: "rgba(148,163,184,0.5)", marginBottom: 4 }}>Welcome back 👋</p>
-                  <h2 style={{ fontFamily: T.font, fontWeight: 800, fontSize: "clamp(24px, 4vw, 38px)", color: "#fff", letterSpacing: "-0.03em" }}>
-                    {dashData.name}
-                  </h2>
-                  <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 8, flexWrap: "wrap" }}>
-                    <span style={{
-                      fontSize: 13, fontWeight: 700, color: "#60a5fa", fontFamily: T.font,
-                      letterSpacing: "0.04em", background: "rgba(37,99,235,0.1)",
-                      border: "1px solid rgba(59,130,246,0.25)", padding: "4px 12px", borderRadius: 8,
-                    }}>{dashData.id}</span>
-                    <span style={{
-                      fontSize: 11, padding: "4px 10px", borderRadius: 100,
-                      background: "rgba(16,185,129,0.12)", border: "1px solid rgba(16,185,129,0.25)",
-                      color: "#6ee7b7", fontWeight: 600,
-                    }}>{dashData.status}</span>
-                    <span style={{ fontSize: 11, color: "rgba(148,163,184,0.4)" }}>Registered {dashData.date}</span>
-                  </div>
+                  <h2 style={{ fontFamily: T.font, fontWeight: 800, fontSize: "clamp(24px, 4vw, 38px)", color: "#fff" }}>{dashData.name}</h2>
                 </div>
-
-                {/* Score */}
-                <div style={{
-                  borderRadius: 20, padding: "20px 28px",
-                  background: T.glass, backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)",
-                  border: "1px solid rgba(16,185,129,0.2)", boxShadow: T.glassShadow,
-                  display: "flex", alignItems: "center", gap: 20,
-                }}>
-                  <ScoreRing score={dashData.score} />
-                  <div>
-                    <div style={{ fontSize: 11, color: "rgba(148,163,184,0.5)", letterSpacing: "0.1em", marginBottom: 4 }}>LEAD QUALITY</div>
-                    <div style={{ fontSize: 20, fontWeight: 800, color: "#10b981", fontFamily: T.font }}>{dashData.status}</div>
-                    <div style={{ fontSize: 11, color: "rgba(148,163,184,0.4)", marginTop: 4 }}>Top {100 - dashData.score}% of applicants</div>
-                  </div>
-                </div>
+                <ScoreRing score={dashData.score} />
               </div>
 
-              {/* Dashboard cards grid */}
               <div className="dash-grid-3" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16 }}>
-
-                {/* Personal Info */}
-                <DashCard title="Personal Info" icon="👤">
-                  <DataRow label="Full Name" value={dashData.name} />
-                  <DataRow label="Email" value={dashData.email} />
-                  <DataRow label="Phone" value={dashData.phone} />
-                  <DataRow label="Location" value={dashData.location} />
-                </DashCard>
-
-                {/* Academic Profile */}
-                <DashCard title="Academic Profile" icon="🎓" accent>
-                  <DataRow label="Education" value={dashData.education} />
-                  <DataRow label="Field" value={dashData.field} />
-                  <DataRow label="Institution" value={dashData.institution} />
-                  <DataRow label="GPA / Score" value={dashData.gpa} highlight />
-                  <DataRow label="Intake" value={dashData.intake} highlight />
-                </DashCard>
-
-                {/* Study Preferences */}
-                <DashCard title="Study Preferences" icon="🌍">
-                  <DataRow label="Target Countries" value={dashData.countries} highlight />
-                  <DataRow label="Course Interest" value={dashData.course} />
-                  <DataRow label="IELTS / TOEFL" value={dashData.ielts} />
-                  <DataRow label="Timeline" value={dashData.timeline} />
-                </DashCard>
-
+                <DashCard title="Personal Info" icon="👤"><DataRow label="Email" value={dashData.email} /><DataRow label="Phone" value={dashData.phone} /></DashCard>
+                <DashCard title="Academic Profile" icon="🎓" accent><DataRow label="GPA" value={dashData.gpa} highlight /><DataRow label="Course" value={dashData.course} /></DashCard>
+                <DashCard title="Study Preferences" icon="🌍"><DataRow label="Target" value={dashData.countries} highlight /><DataRow label="Budget" value={dashData.budget} /></DashCard>
               </div>
 
-              {/* Second row */}
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16, marginTop: 16 }} className="dash-grid-4">
-
-                {/* Financial Readiness */}
-                <DashCard title="Financial Readiness" icon="💰">
-                  <DataRow label="Budget Range" value={dashData.budget} highlight />
-                  <DataRow label="Sponsorship" value={dashData.sponsorship} />
-                </DashCard>
-
-                {/* Next Steps */}
-                <DashCard title="Recommended Next Steps" icon="🚀">
-                  {[
-                    "Complete IELTS preparation (target 7.0+)",
-                    "Shortlist 5 universities in UK/Ireland",
-                    "Prepare SOP and LOR documents",
-                    "Schedule a counsellor call",
-                  ].map((step, i) => (
-                    <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 8, padding: "6px 0", borderBottom: i < 3 ? "1px solid rgba(255,255,255,0.05)" : "none" }}>
-                      <div style={{ width: 18, height: 18, borderRadius: "50%", background: "rgba(37,99,235,0.2)", border: "1px solid rgba(59,130,246,0.3)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, marginTop: 1 }}>
-                        <span style={{ fontSize: 9, color: "#60a5fa", fontWeight: 700 }}>{i + 1}</span>
-                      </div>
-                      <span style={{ fontSize: 12, color: "rgba(200,213,255,0.65)", lineHeight: 1.5, fontFamily: T.fontBody }}>{step}</span>
-                    </div>
-                  ))}
-                </DashCard>
-
-              </div>
-
-              {/* ── BOOK A SESSION ── */}
-              <div style={{
-                marginTop: 28, borderRadius: 24, overflow: "hidden", position: "relative",
-                padding: "48px 40px", textAlign: "center",
-                background: "linear-gradient(135deg, rgba(37,99,235,0.14) 0%, rgba(29,78,216,0.08) 50%, rgba(5,150,105,0.08) 100%)",
-                border: "1px solid rgba(59,130,246,0.25)",
-                boxShadow: "0 0 60px rgba(37,99,235,0.1), 0 8px 48px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.08)",
-                backdropFilter: "blur(24px)", WebkitBackdropFilter: "blur(24px)",
-              }}>
-                {/* Top shimmer line */}
-                <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 1, background: "linear-gradient(90deg, transparent, rgba(59,130,246,0.5), rgba(16,185,129,0.3), transparent)" }} />
-                {/* Radial glow overlay */}
-                <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse 60% 50% at 50% 0%, rgba(37,99,235,0.08), transparent 70%)", pointerEvents: "none" }} />
-
+              {/* ── REDIRECT BOOKING AREA ── */}
+              <div style={{ marginTop: 28, borderRadius: 24, padding: "48px 40px", textAlign: "center", background: "linear-gradient(135deg, rgba(37,99,235,0.14) 0%, rgba(29,78,216,0.08) 50%, rgba(5,150,105,0.08) 100%)", border: "1px solid rgba(59,130,246,0.25)", boxShadow: T.glassShadow, backdropFilter: "blur(24px)" }}>
                 <span style={{ fontSize: 40, display: "block", marginBottom: 16, animation: "calFloat 4s ease-in-out infinite" }}>📅</span>
+                <h2 style={{ fontFamily: T.font, fontWeight: 800, fontSize: "clamp(22px, 3.5vw, 34px)", color: "#fff", marginBottom: 10 }}>Ready to take the next step?</h2>
+                <p style={{ fontSize: 14, color: "rgba(148,163,184,0.6)", maxWidth: 460, margin: "0 auto 28px", lineHeight: 1.65 }}>Speak directly with a Fateh expert counsellor who will review your profile and map out your roadmap.</p>
+                
+                {/* REPLACED: Redirection Button */}
+                <button 
+                  onClick={() => navigate('/book')} 
+                  style={{ padding: "16px 36px", borderRadius: 16, background: "linear-gradient(135deg, #2563eb, #1d4ed8)", color: "#fff", fontSize: 15, fontWeight: 700, cursor: "pointer", border: "none", boxShadow: "0 0 24px rgba(37,99,235,0.5)" }}
+                >
+                  Book a Counselling Session With Us!
+                </button>
 
-                <div style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "4px 12px", borderRadius: 100, background: "rgba(37,99,235,0.12)", border: "1px solid rgba(59,130,246,0.22)", marginBottom: 14 }}>
-                  <span style={{ width: 5, height: 5, borderRadius: "50%", background: "#3b82f6", boxShadow: "0 0 6px #3b82f6", display: "inline-block" }} />
-                  <span style={{ fontSize: 10, color: "#93c5fd", fontWeight: 600, letterSpacing: "0.12em", textTransform: "uppercase" }}>Expert Counseling Available</span>
-                </div>
-
-                <h2 style={{ fontFamily: T.font, fontWeight: 800, fontSize: "clamp(22px, 3.5vw, 34px)", color: "#fff", letterSpacing: "-0.03em", marginBottom: 10, position: "relative", zIndex: 1 }}>
-                  Ready to take the next step?
-                </h2>
-                <p style={{ fontSize: 14, color: "rgba(148,163,184,0.6)", maxWidth: 460, margin: "0 auto 28px", lineHeight: 1.65, position: "relative", zIndex: 1 }}>
-                  Speak directly with a Fateh expert counsellor who will review your profile, suggest universities, and map out your complete UK &amp; Ireland application roadmap.
-                </p>
-
-                <BookButton />
-
-                <div style={{ display: "flex", justifyContent: "center", gap: 24, marginTop: 22, flexWrap: "wrap", position: "relative", zIndex: 1 }}>
-                  {["Free consultation", "30-minute session", "Expert counsellors", "Personalised roadmap"].map((f) => (
+                <div style={{ display: "flex", justifyContent: "center", gap: 24, marginTop: 22 }}>
+                  {["Free consultation", "Expert counsellors"].map((f) => (
                     <div key={f} style={{ display: "flex", alignItems: "center", gap: 6 }}>
                       <div style={{ width: 5, height: 5, borderRadius: "50%", background: "#10b981", boxShadow: "0 0 5px #10b981" }} />
                       <span style={{ fontSize: 12, color: "rgba(148,163,184,0.5)" }}>{f}</span>
@@ -868,47 +596,9 @@ export default function StudentView() {
                   ))}
                 </div>
               </div>
-
-              {/* Export bar */}
-              <div style={{
-                marginTop: 20, borderRadius: 16, padding: "16px 20px",
-                background: T.glass, backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)",
-                border: T.glassBorder, display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 12,
-              }}>
-                <div>
-                  <div style={{ fontSize: 13, fontWeight: 600, color: "#e2e8f0" }}>Profile ready for counsellor review</div>
-                  <div style={{ fontSize: 11, color: "rgba(148,163,184,0.5)", marginTop: 2 }}>Your structured data has been queued in the lead dashboard</div>
-                </div>
-                <div style={{ display: "flex", gap: 10 }}>
-                  {["📄 Download PDF", "📤 Share Profile"].map((label) => (
-                    <button key={label} style={{
-                      padding: "8px 16px", borderRadius: 10, cursor: "pointer",
-                      background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)",
-                      color: "rgba(200,213,255,0.7)", fontSize: 12, fontFamily: T.fontBody,
-                      transition: "all 0.2s",
-                    }}
-                      onMouseEnter={(e) => { e.target.style.background = "rgba(37,99,235,0.15)"; e.target.style.borderColor = "rgba(59,130,246,0.3)"; e.target.style.color = "#93c5fd"; }}
-                      onMouseLeave={(e) => { e.target.style.background = "rgba(255,255,255,0.05)"; e.target.style.borderColor = "rgba(255,255,255,0.1)"; e.target.style.color = "rgba(200,213,255,0.7)"; }}>
-                      {label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
             </section>
           )}
         </main>
-
-        {/* Footer */}
-        <footer style={{ borderTop: "1px solid rgba(255,255,255,0.06)", background: "rgba(3,5,8,0.8)", padding: "16px 28px" }}>
-          <div style={{ maxWidth: 1200, margin: "0 auto", display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 12 }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              <FatehLogo size={22} />
-              <span style={{ fontSize: 12, color: "rgba(148,163,184,0.4)", fontFamily: T.font }}>Fateh Education</span>
-            </div>
-            <span style={{ fontSize: 11, color: "rgba(148,163,184,0.3)" }}>© {new Date().getFullYear()} Fateh Education. All rights reserved.</span>
-          </div>
-        </footer>
       </div>
     </>
   );

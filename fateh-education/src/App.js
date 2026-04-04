@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import LandingPage from './pages/LandingPage';
 import StudentView from './pages/StudentView';
+import CounsellorBookingFlow from './pages/CounsellorBookingFlow';
 
 function App() {
   return (
@@ -12,6 +13,7 @@ function App() {
         
         {/* This is your "localhost:3000/student" */}
         <Route path="/student" element={<StudentView />} />
+        <Route path="/book" element={<CounsellorBookingFlow isOpen={true} />} />
       </Routes>
     </Router>
   );
