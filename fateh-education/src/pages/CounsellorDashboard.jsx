@@ -7,8 +7,6 @@ import { useState, useEffect, useRef } from "react";
   • Hot  (70–100): immediate callback   → crimson / orange glow
   • Warm (40–69):  follow-up 24 h       → amber / yellow glow
   • Cold (0–39):   nurture campaign     → ice-blue / teal glow
-
-  Scoring: Financial Readiness (0–50) + Timeline Urgency (0–50)
   ──────────────────────────────────────────────────────────────
 */
 
@@ -326,7 +324,7 @@ function MiniBar({ label, value, max = 50, color }) {
   );
 }
 
-/** Single student card */
+/** Single student card - Now uniform for all tiers */
 function LeadCard({ s, t, onView }) {
   const [hov, setHov] = useState(false);
   
@@ -336,7 +334,7 @@ function LeadCard({ s, t, onView }) {
       onMouseLeave={() => setHov(false)}
       style={{
         borderRadius: 22, 
-        padding: "24px 20px", // Matched the padding from your Warm leads
+        padding: "24px 20px", 
         background: hov
           ? `linear-gradient(145deg, rgba(255,255,255,0.1), rgba(255,255,255,0.04))`
           : "linear-gradient(145deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.02) 100%)",
@@ -392,13 +390,13 @@ function LeadCard({ s, t, onView }) {
         ))}
       </div>
 
-      {/* 4. The Action Area: Large Button + Mini Profile Icon */}
+      {/* 4. Action Area: Large Button + Mini Profile Icon */}
       <div style={{ display: "flex", gap: 10 }}>
         <button
           onClick={() => onView(s)}
           style={{
             flex: 1, padding: "12px", borderRadius: 14, border: "none",
-            background: "linear-gradient(135deg, #f97316, #ea580c)", // Your orange gradient
+            background: "linear-gradient(135deg, #f97316, #ea580c)", // Orange gradient for all
             color: "#fff", fontSize: 13, fontWeight: 700, cursor: "pointer",
             boxShadow: "0 0 20px rgba(249,115,22,0.4)", transition: "all 0.3s ease"
           }}
@@ -408,7 +406,7 @@ function LeadCard({ s, t, onView }) {
           View Transcript
         </button>
         
-        {/* Profile Button (The small one with the icon from your screenshot) */}
+        {/* Profile Button */}
         <button
           style={{
             width: 46, height: 46, borderRadius: 14, border: "1px solid rgba(255,255,255,0.1)",
@@ -430,13 +428,15 @@ function Column({ tier, students, onView }) {
   const t = TIER[tier];
   return (
     <div style={{
-      flex: 1, minWidth: 0,
+      display: "flex", flexDirection: "column",
+      flex: 1, 
+      height: "calc(100vh - 280px)", // Locks column height
+      minHeight: "500px",            // Prevents disappearing on tiny screens
       borderRadius: 22, overflow: "hidden",
       background: "linear-gradient(180deg,rgba(255,255,255,.05) 0%,rgba(255,255,255,.02) 100%)",
       backdropFilter: "blur(24px)", WebkitBackdropFilter: "blur(24px)",
       border: `1px solid ${t.border}`,
       boxShadow: `0 0 0 1px ${t.glow}0.06), 0 8px 40px rgba(0,0,0,.4)`,
-      display: "flex", flexDirection: "column",
     }}>
       {/* Column header */}
       <div style={{
@@ -466,11 +466,10 @@ function Column({ tier, students, onView }) {
         </div>
       </div>
 
-      {/* Cards scroll area */}
+      {/* Cards scroll area - Scrolls internally */}
       <div style={{
         flex: 1, overflowY: "auto", padding: "14px 12px",
         display: "flex", flexDirection: "column", gap: 12,
-        maxHeight: "calc(100vh - 280px)",
         scrollbarWidth: "thin",
         scrollbarColor: `${t.glow}0.3) transparent`,
       }}>
@@ -835,15 +834,17 @@ export default function CounsellorDashboard({ counsellorName = "Dr. Aarav Mehta"
 
           {/* ── KANBAN COLUMNS ── */}
           <div style={{
-            display: "flex", gap: 14, alignItems: "flex-start",
+            display: "flex", gap: 16, 
+            overflowX: "auto",
+            paddingBottom: "10px"
           }}>
-            <div className="cd-col" style={{ flex: 1, minWidth: 0 }}>
+            <div className="cd-col" style={{ flex: 1, minWidth: "340px" }}>
               <Column tier="hot"  students={filtered("hot", hot)}   onView={setActiveModal} />
             </div>
-            <div className="cd-col" style={{ flex: 1, minWidth: 0 }}>
+            <div className="cd-col" style={{ flex: 1, minWidth: "340px" }}>
               <Column tier="warm" students={filtered("warm", warm)} onView={setActiveModal} />
             </div>
-            <div className="cd-col" style={{ flex: 1, minWidth: 0 }}>
+            <div className="cd-col" style={{ flex: 1, minWidth: "340px" }}>
               <Column tier="cold" students={filtered("cold", cold)} onView={setActiveModal} />
             </div>
           </div>

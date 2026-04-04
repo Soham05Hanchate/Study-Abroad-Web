@@ -1,24 +1,17 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from 'react-router-dom';
+
 /* ─────────────────────────────────────────────
    FATEH EDUCATION — AI Voice Agent Landing Page
-   Dark glassmorphism theme · React + Tailwind CSS
+   Immersive Video Background Theme
    ───────────────────────────────────────────── */
 
 const css = {
   page: {
-    background: "radial-gradient(ellipse 90% 55% at 50% -5%, #0d2547 0%, #060b14 50%, #030508 100%)",
     minHeight: "100vh",
     fontFamily: "'Space Grotesk', sans-serif",
-  },
-  gridBg: {
-    backgroundImage:
-      "linear-gradient(rgba(37,99,235,0.07) 1px, transparent 1px), linear-gradient(90deg, rgba(37,99,235,0.07) 1px, transparent 1px)",
-    backgroundSize: "48px 48px",
-    position: "absolute",
-    inset: 0,
-    maskImage: "radial-gradient(ellipse 90% 65% at 50% 0%, black 20%, transparent 100%)",
-    WebkitMaskImage: "radial-gradient(ellipse 90% 65% at 50% 0%, black 20%, transparent 100%)",
+    position: "relative",
+    backgroundColor: "#030508", // Fallback color
   },
   glassCard: {
     background: "linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.02) 100%)",
@@ -44,19 +37,7 @@ const css = {
   btnCounsellor: {
     background: "linear-gradient(135deg, #059669 0%, #047857 100%)",
     boxShadow: "0 0 24px rgba(5,150,105,0.45), 0 4px 16px rgba(0,0,0,0.3)",
-  },
-  orb1: {
-    position: "absolute", width: 500, height: 500, borderRadius: "50%",
-    background: "radial-gradient(circle, rgba(37,99,235,0.15) 0%, transparent 70%)",
-    top: -140, left: "8%", filter: "blur(50px)", pointerEvents: "none",
-    animation: "orb1 12s ease-in-out infinite",
-  },
-  orb2: {
-    position: "absolute", width: 380, height: 380, borderRadius: "50%",
-    background: "radial-gradient(circle, rgba(5,150,105,0.12) 0%, transparent 70%)",
-    top: 220, right: "5%", filter: "blur(50px)", pointerEvents: "none",
-    animation: "orb2 10s ease-in-out infinite",
-  },
+  }
 };
 
 // ── Shield Logo ──
@@ -91,23 +72,6 @@ function Counter({ target, suffix = "" }) {
     return () => obs.disconnect();
   }, [target]);
   return <span ref={ref}>{val.toLocaleString()}{suffix}</span>;
-}
-
-// ── Floating particles ──
-function Particles() {
-  const dots = Array.from({ length: 28 }, (_, i) => ({
-    id: i, x: Math.random() * 100, y: Math.random() * 100,
-    r: Math.random() * 1.5 + 0.5, delay: Math.random() * 5, dur: Math.random() * 6 + 6,
-  }));
-  return (
-    <svg style={{ position: "absolute", inset: 0, width: "100%", height: "100%", pointerEvents: "none", opacity: 0.35 }}>
-      {dots.map((d) => (
-        <circle key={d.id} cx={`${d.x}%`} cy={`${d.y}%`} r={d.r} fill="#60a5fa">
-          <animate attributeName="opacity" values="0.2;0.8;0.2" dur={`${d.dur}s`} begin={`${d.delay}s`} repeatCount="indefinite" />
-        </circle>
-      ))}
-    </svg>
-  );
 }
 
 // ── Typing headline ──
@@ -153,12 +117,11 @@ function PathCard({ type }) {
     ? isStudent ? css.glassCardHoverStudent : css.glassCardHoverCounsellor
     : {};
 
-  // Helper function to handle navigation
   const handleNavigation = () => {
     if (isStudent) {
       navigate('/student');
     } else {
-      navigate('/counsellor-login'); // Matches the route you set for the login page
+      navigate('/counsellor-login'); 
     }
   };
 
@@ -166,7 +129,7 @@ function PathCard({ type }) {
     <div
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
-      onClick={handleNavigation} // Makes the whole card clickable
+      onClick={handleNavigation} 
       style={{
         ...css.glassCard,
         ...hoverStyle,
@@ -181,7 +144,6 @@ function PathCard({ type }) {
         textAlign: "center",
       }}
     >
-      {/* Corner accent */}
       <div style={{
         position: "absolute", top: 0, right: 0, width: 130, height: 130,
         borderRadius: "0 28px 0 100%",
@@ -190,7 +152,6 @@ function PathCard({ type }) {
           : "radial-gradient(circle at top right, rgba(16,185,129,0.16), transparent 70%)",
       }} />
 
-      {/* Icon ring */}
       <div style={{
         width: 84, height: 84, borderRadius: "50%", display: "flex",
         alignItems: "center", justifyContent: "center", margin: "0 auto 20px",
@@ -205,7 +166,6 @@ function PathCard({ type }) {
         {isStudent ? <GraduationIcon /> : <AnalyticsIcon />}
       </div>
 
-      {/* Badge */}
       <div style={{
         display: "inline-block", padding: "4px 12px", borderRadius: 100,
         fontSize: 10, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: 16,
@@ -220,13 +180,12 @@ function PathCard({ type }) {
         {isStudent ? "I am a Student" : "I am a Counsellor"}
       </h3>
 
-      <p style={{ fontSize: 14, lineHeight: 1.65, color: "rgba(200,213,255,0.6)", maxWidth: 260, margin: "0 auto 24px" }}>
+      <p style={{ fontSize: 14, lineHeight: 1.65, color: "rgba(200,213,255,0.8)", maxWidth: 260, margin: "0 auto 24px" }}>
         {isStudent
           ? "Start your journey to the UK & Ireland instantly. Our AI voice agent guides you every step of the way."
           : "Access qualified leads, AI-generated transcripts, and intelligent student scores in real time."}
       </p>
 
-      {/* Pills */}
       <div style={{ display: "flex", flexWrap: "wrap", gap: 6, justifyContent: "center", marginBottom: 28 }}>
         {(isStudent
           ? ["Voice Counseling", "Instant Guidance", "UK & Ireland"]
@@ -235,15 +194,14 @@ function PathCard({ type }) {
           <span key={tag} style={{
             fontSize: 11, padding: "4px 11px", borderRadius: 100,
             background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.09)",
-            color: "rgba(200,213,255,0.5)",
+            color: "rgba(200,213,255,0.7)",
           }}>{tag}</span>
         ))}
       </div>
 
-      {/* CTA Button */}
       <button 
         onClick={(e) => {
-          e.stopPropagation(); // Prevents double-triggering since the parent div also has an onClick
+          e.stopPropagation(); 
           handleNavigation();
         }}
         style={{
@@ -301,7 +259,7 @@ function Stats() {
           <div style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: "clamp(24px, 4vw, 36px)", color: "#60a5fa", lineHeight: 1 }}>
             <Counter target={s.val} suffix={s.suffix} />
           </div>
-          <div style={{ fontSize: 10, color: "rgba(148,163,184,0.5)", textTransform: "uppercase", letterSpacing: "0.1em", marginTop: 5 }}>{s.label}</div>
+          <div style={{ fontSize: 10, color: "rgba(255,255,255,0.7)", textTransform: "uppercase", letterSpacing: "0.1em", marginTop: 5 }}>{s.label}</div>
         </div>
       ))}
     </div>
@@ -313,12 +271,12 @@ function TrustBar() {
   const unis = ["University of Edinburgh", "Trinity College Dublin", "UCL London", "King's College London", "University of Manchester", "UCD Dublin", "University of Galway", "Imperial College"];
   return (
     <div style={{ marginTop: 44, overflow: "hidden" }}>
-      <p style={{ textAlign: "center", fontSize: 10, textTransform: "uppercase", letterSpacing: "0.14em", color: "rgba(148,163,184,0.35)", marginBottom: 16 }}>
+      <p style={{ textAlign: "center", fontSize: 10, textTransform: "uppercase", letterSpacing: "0.14em", color: "rgba(255,255,255,0.6)", marginBottom: 16 }}>
         Trusted pathway to top institutions
       </p>
       <div style={{ display: "flex", gap: 24, animation: "marquee 24s linear infinite", width: "max-content" }}>
         {[...unis, ...unis].map((u, i) => (
-          <span key={i} style={{ fontSize: 12, padding: "7px 16px", borderRadius: 100, color: "rgba(148,163,184,0.4)", border: "1px solid rgba(255,255,255,0.07)", background: "rgba(255,255,255,0.02)", whiteSpace: "nowrap" }}>
+          <span key={i} style={{ fontSize: 12, padding: "7px 16px", borderRadius: 100, color: "rgba(255,255,255,0.8)", border: "1px solid rgba(255,255,255,0.15)", background: "rgba(255,255,255,0.05)", whiteSpace: "nowrap", backdropFilter: "blur(4px)" }}>
             {u}
           </span>
         ))}
@@ -342,9 +300,6 @@ export default function LandingPage() {
         @import url('https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Space+Grotesk:wght@300;400;500;600&display=swap');
         @keyframes marquee { from { transform: translateX(0) } to { transform: translateX(-50%) } }
         @keyframes fadeUp { from { opacity:0; transform:translateY(26px) } to { opacity:1; transform:translateY(0) } }
-        @keyframes orb1 { 0%,100%{transform:scale(1) translateX(0)} 50%{transform:scale(1.1) translateX(20px)} }
-        @keyframes orb2 { 0%,100%{transform:scale(1) translateY(0)} 50%{transform:scale(1.08) translateY(-15px)} }
-        @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-7px)} }
         @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
         .fade1{animation:fadeUp 0.7s ease both 0.1s}
         .fade2{animation:fadeUp 0.7s ease both 0.25s}
@@ -365,103 +320,122 @@ export default function LandingPage() {
       `}</style>
 
       <div style={css.page}>
-        {/* Ambient BG */}
-        <div style={css.gridBg} />
-        <div style={css.orb1} />
-        <div style={css.orb2} />
-        <Particles />
+        
+        {/* ── IMMERSIVE BACKGROUND VIDEO ── */}
+        <div style={{ position: "fixed", inset: 0, zIndex: 0, overflow: "hidden" }}>
+          <video 
+            autoPlay 
+            loop 
+            muted 
+            playsInline 
+            style={{ width: "100%", height: "100%", objectFit: "cover" }}
+          >
+            <source src="/intro.mp4" type="video/mp4" />
+          </video>
+          
+          {/* Dark gradient overlay so the white text and cards are readable over the video */}
+          <div style={{ 
+            position: "absolute", 
+            inset: 0, 
+            background: "linear-gradient(to bottom, rgba(3,5,8,0.65) 0%, rgba(6,11,20,0.85) 100%)",
+            backdropFilter: "blur(2px)" 
+          }} />
+        </div>
 
-        {/* ── HEADER ── */}
-        <header style={{
-          position: "sticky", top: 0, zIndex: 50, transition: "all 0.3s ease",
-          background: scrolled ? "rgba(6,11,20,0.88)" : "transparent",
-          backdropFilter: scrolled ? "blur(20px)" : "none",
-          WebkitBackdropFilter: scrolled ? "blur(20px)" : "none",
-          borderBottom: scrolled ? "1px solid rgba(255,255,255,0.06)" : "1px solid transparent",
-        }}>
-          <div style={{ maxWidth: 1100, margin: "0 auto", padding: "14px 28px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-              <FatehLogo size={36} />
-              <div>
-                <div style={{ color: "#fff", fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: 15, letterSpacing: "-0.01em", lineHeight: 1.2 }}>FATEH</div>
-                <div style={{ color: "#3b82f6", fontSize: 10, letterSpacing: "0.1em", lineHeight: 1.2 }}>CONQUER YOUR DREAMS</div>
+        {/* ── WRAPPER TO KEEP CONTENT ABOVE VIDEO ── */}
+        <div style={{ position: "relative", zIndex: 10 }}>
+          
+          {/* ── HEADER ── */}
+          <header style={{
+            position: "sticky", top: 0, transition: "all 0.3s ease",
+            background: scrolled ? "rgba(6,11,20,0.88)" : "transparent",
+            backdropFilter: scrolled ? "blur(20px)" : "none",
+            WebkitBackdropFilter: scrolled ? "blur(20px)" : "none",
+            borderBottom: scrolled ? "1px solid rgba(255,255,255,0.06)" : "1px solid transparent",
+          }}>
+            <div style={{ maxWidth: 1100, margin: "0 auto", padding: "14px 28px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                <FatehLogo size={36} />
+                <div>
+                  <div style={{ color: "#fff", fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: 15, letterSpacing: "-0.01em", lineHeight: 1.2 }}>FATEH</div>
+                  <div style={{ color: "#3b82f6", fontSize: 10, letterSpacing: "0.1em", lineHeight: 1.2 }}>CONQUER YOUR DREAMS</div>
+                </div>
               </div>
+              <nav style={{ display: "flex", alignItems: "center", gap: 24 }}>
+                {["About", "Universities", "Services", "Contact"].map((n) => (
+                  <a key={n} href="#" style={{ color: "rgba(255,255,255,0.8)", fontSize: 13, textDecoration: "none", transition: "color 0.2s", fontWeight: 500 }}
+                    onMouseEnter={(e) => (e.target.style.color = "#60a5fa")}
+                    onMouseLeave={(e) => (e.target.style.color = "rgba(255,255,255,0.8)")}>{n}</a>
+                ))}
+                <button style={{ background: "rgba(255,255,255,0.1)", backdropFilter: "blur(10px)", border: "1px solid rgba(255,255,255,0.2)", color: "#fff", fontSize: 13, padding: "7px 16px", borderRadius: 10, cursor: "pointer", fontFamily: "'Space Grotesk', sans-serif", transition: "all 0.25s" }}
+                  onMouseEnter={(e) => { e.target.style.background = "#2563eb"; e.target.style.borderColor = "#2563eb"; }}
+                  onMouseLeave={(e) => { e.target.style.background = "rgba(255,255,255,0.1)"; e.target.style.borderColor = "rgba(255,255,255,0.2)"; }}>
+                  Sign In
+                </button>
+              </nav>
             </div>
-            <nav style={{ display: "flex", alignItems: "center", gap: 24 }}>
-              {["About", "Universities", "Services", "Contact"].map((n) => (
-                <a key={n} href="#" style={{ color: "rgba(148,163,184,0.6)", fontSize: 13, textDecoration: "none", transition: "color 0.2s" }}
-                  onMouseEnter={(e) => (e.target.style.color = "#e2e8f0")}
-                  onMouseLeave={(e) => (e.target.style.color = "rgba(148,163,184,0.6)")}>{n}</a>
-              ))}
-              <button style={{ background: "rgba(37,99,235,0.12)", border: "1px solid rgba(59,130,246,0.25)", color: "#93c5fd", fontSize: 13, padding: "7px 16px", borderRadius: 10, cursor: "pointer", fontFamily: "'Space Grotesk', sans-serif", transition: "all 0.25s" }}
-                onMouseEnter={(e) => { e.target.style.background = "#2563eb"; e.target.style.color = "#fff"; }}
-                onMouseLeave={(e) => { e.target.style.background = "rgba(37,99,235,0.12)"; e.target.style.color = "#93c5fd"; }}>
-                Sign In
-              </button>
-            </nav>
-          </div>
-        </header>
+          </header>
 
-        {/* ── HERO ── */}
-        <main style={{ position: "relative", zIndex: 10 }}>
-          <section style={{ maxWidth: 1100, margin: "0 auto", padding: "60px 28px 20px", textAlign: "center" }}>
+          {/* ── HERO ── */}
+          <main>
+            <section style={{ maxWidth: 1100, margin: "0 auto", padding: "60px 28px 20px", textAlign: "center" }}>
 
-            {/* Eyebrow */}
-            <div className="fade1" style={{ marginBottom: 24 }}>
-              <div style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "6px 16px", borderRadius: 100, background: "rgba(37,99,235,0.1)", border: "1px solid rgba(59,130,246,0.22)" }}>
-                <span style={{ width: 7, height: 7, borderRadius: "50%", background: "#3b82f6", boxShadow: "0 0 8px #3b82f6", display: "inline-block", flexShrink: 0 }} />
-                <span style={{ color: "#93c5fd", fontSize: 11, fontWeight: 600, letterSpacing: "0.12em", textTransform: "uppercase" }}>AI Voice Agent · Now Live</span>
+              <div className="fade1" style={{ marginBottom: 24 }}>
+                <div style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "6px 16px", borderRadius: 100, background: "rgba(0,0,0,0.4)", backdropFilter: "blur(10px)", border: "1px solid rgba(255,255,255,0.15)" }}>
+                  <span style={{ width: 7, height: 7, borderRadius: "50%", background: "#60a5fa", boxShadow: "0 0 8px #60a5fa", display: "inline-block", flexShrink: 0 }} />
+                  <span style={{ color: "#e2e8f0", fontSize: 11, fontWeight: 600, letterSpacing: "0.12em", textTransform: "uppercase" }}>AI Voice Agent · Now Live</span>
+                </div>
               </div>
-            </div>
 
-            {/* Headline — both lines white, typing text blue */}
-            <h1 className="fade2" style={{ fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: "clamp(36px, 6vw, 66px)", letterSpacing: "-0.035em", color: "#fff", lineHeight: 1.08, marginBottom: 6 }}>
-              Welcome to the
-            </h1>
-            <h1 className="fade2" style={{ fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: "clamp(36px, 6vw, 66px)", letterSpacing: "-0.035em", color: "#fff", lineHeight: 1.08, marginBottom: 20 }}>
-              Future of <TypingText />
-            </h1>
+              <h1 className="fade2" style={{ fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: "clamp(36px, 6vw, 66px)", letterSpacing: "-0.035em", color: "#fff", lineHeight: 1.08, marginBottom: 6 }}>
+                Welcome to the
+              </h1>
+              <h1 className="fade2" style={{ fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: "clamp(36px, 6vw, 66px)", letterSpacing: "-0.035em", color: "#fff", lineHeight: 1.08, marginBottom: 20 }}>
+                Future of <TypingText />
+              </h1>
 
-            <p className="fade3" style={{ color: "rgba(148,163,184,0.65)", fontSize: "clamp(14px, 2vw, 17px)", maxWidth: 520, margin: "0 auto 52px", lineHeight: 1.7 }}>
-              Instant 24/7 AI-powered counseling meets intelligent lead management. Your gateway to top UK &amp; Ireland universities — reimagined.
-            </p>
+              <p className="fade3" style={{ color: "rgba(255,255,255,0.8)", fontSize: "clamp(14px, 2vw, 17px)", maxWidth: 520, margin: "0 auto 52px", lineHeight: 1.7, textShadow: "0 2px 4px rgba(0,0,0,0.5)" }}>
+                Instant 24/7 AI-powered counseling meets intelligent lead management. Your gateway to top UK &amp; Ireland universities — reimagined.
+              </p>
 
-            {/* ── TWO CARDS ── */}
-            <div className="fade4 cards-grid" style={{ display: "flex", flexDirection: "row", gap: 20, maxWidth: 900, margin: "0 auto" }}>
-              <PathCard type="student" />
-              <div className="or-divider" style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", flexShrink: 0, padding: "0 4px" }}>
-                <div style={{ width: 1, flex: 1, background: "linear-gradient(to bottom, transparent, rgba(255,255,255,0.1), transparent)" }} />
-                <span style={{ fontSize: 11, color: "rgba(148,163,184,0.3)", letterSpacing: "0.12em", padding: "10px 0" }}>OR</span>
-                <div style={{ width: 1, flex: 1, background: "linear-gradient(to bottom, transparent, rgba(255,255,255,0.1), transparent)" }} />
+              {/* ── TWO CARDS ── */}
+              <div className="fade4 cards-grid" style={{ display: "flex", flexDirection: "row", gap: 20, maxWidth: 900, margin: "0 auto" }}>
+                <PathCard type="student" />
+                <div className="or-divider" style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", flexShrink: 0, padding: "0 4px" }}>
+                  <div style={{ width: 1, flex: 1, background: "linear-gradient(to bottom, transparent, rgba(255,255,255,0.2), transparent)" }} />
+                  <span style={{ fontSize: 11, color: "rgba(255,255,255,0.5)", letterSpacing: "0.12em", padding: "10px 0" }}>OR</span>
+                  <div style={{ width: 1, flex: 1, background: "linear-gradient(to bottom, transparent, rgba(255,255,255,0.2), transparent)" }} />
+                </div>
+                <PathCard type="counsellor" />
               </div>
-              <PathCard type="counsellor" />
-            </div>
 
-            {/* Stats + Trust */}
-            <div className="fade5">
-              <Stats />
-              <TrustBar />
-            </div>
-          </section>
-        </main>
+              {/* Stats + Trust */}
+              <div className="fade5">
+                <Stats />
+                <TrustBar />
+              </div>
+            </section>
+          </main>
 
-        {/* ── FOOTER ── */}
-        <footer style={{ borderTop: "1px solid rgba(255,255,255,0.06)", background: "rgba(3,5,8,0.85)", marginTop: 64 }}>
-          <div style={{ maxWidth: 1100, margin: "0 auto", padding: "24px 28px", display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 16 }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 9 }}>
-              <FatehLogo size={26} />
-              <span style={{ color: "rgba(148,163,184,0.5)", fontFamily: "'Syne', sans-serif", fontWeight: 600, fontSize: 14 }}>Fateh Education</span>
+          {/* ── FOOTER ── */}
+          <footer style={{ borderTop: "1px solid rgba(255,255,255,0.1)", background: "rgba(0,0,0,0.6)", backdropFilter: "blur(20px)", marginTop: 64 }}>
+            <div style={{ maxWidth: 1100, margin: "0 auto", padding: "24px 28px", display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 16 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 9 }}>
+                <FatehLogo size={26} />
+                <span style={{ color: "rgba(255,255,255,0.7)", fontFamily: "'Syne', sans-serif", fontWeight: 600, fontSize: 14 }}>Fateh Education</span>
+              </div>
+              <div style={{ display: "flex", gap: 20 }}>
+                {["Privacy Policy", "Terms of Service", "Contact Us"].map((l) => (
+                  <a key={l} href="#" style={{ fontSize: 11, color: "rgba(255,255,255,0.5)", textDecoration: "none", transition: "color 0.2s" }}
+                    onMouseEnter={(e) => (e.target.style.color = "#fff")}
+                    onMouseLeave={(e) => (e.target.style.color = "rgba(255,255,255,0.5)")}>{l}</a>
+                ))}
+              </div>
+              <p style={{ fontSize: 11, color: "rgba(255,255,255,0.4)" }}>© {new Date().getFullYear()} Fateh Education. All rights reserved.</p>
             </div>
-            <div style={{ display: "flex", gap: 20 }}>
-              {["Privacy Policy", "Terms of Service", "Contact Us"].map((l) => (
-                <a key={l} href="#" style={{ fontSize: 11, color: "rgba(148,163,184,0.35)", textDecoration: "none", transition: "color 0.2s" }}
-                  onMouseEnter={(e) => (e.target.style.color = "#94a3b8")}
-                  onMouseLeave={(e) => (e.target.style.color = "rgba(148,163,184,0.35)")}>{l}</a>
-              ))}
-            </div>
-            <p style={{ fontSize: 11, color: "rgba(148,163,184,0.3)" }}>© {new Date().getFullYear()} Fateh Education. All rights reserved.</p>
-          </div>
-        </footer>
+          </footer>
+
+        </div>
       </div>
     </>
   );

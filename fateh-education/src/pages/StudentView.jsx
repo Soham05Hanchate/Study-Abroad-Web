@@ -1,13 +1,14 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import CounsellorBookingFlow from "./CounsellorBookingFlow";
+
 /* ═══════════════════════════════════════════════════════════════
    FATEH EDUCATION — Student View
    AI Voice Agent + Student Overview Dashboard
    Dark glassmorphism · Desktop & Mobile responsive
    ═══════════════════════════════════════════════════════════════ */
 
-// ── Design tokens (inline styles for portability) ──
+// ── Design tokens ──
 const T = {
   bg: "#060b14",
   bgGrad: "radial-gradient(ellipse 90% 55% at 50% -5%, #0d2547 0%, #060b14 50%, #030508 100%)",
@@ -21,19 +22,16 @@ const T = {
   fontBody: "'Space Grotesk', sans-serif",
 };
 
-// ── Mock data that fills in per phase ──
 const MOCK_DATA = {
   phase1: { name: "Priya Sharma", email: "priya.sharma@gmail.com", phone: "+91 98765 43210", location: "Pune, Maharashtra" },
   phase2: { education: "Bachelor's (B.Tech)", field: "Computer Science", institution: "SPPU, Pune", gpa: "8.4 / 10", countries: "UK, Ireland", course: "MSc AI / Data Science", intake: "September 2025" },
   phase3: { ielts: "Preparing (Target 7.0)", budget: "₹40–55 Lakhs", timeline: "6–8 months", sponsorship: "Self-funded + Education Loan" },
 };
 
-// ── Unique ID generator ──
 function genID() {
   return "FE-" + Math.random().toString(36).substring(2, 6).toUpperCase() + "-" + Date.now().toString(36).slice(-4).toUpperCase();
 }
 
-// ── Returning-student mock DB ──
 const MOCK_DB = {
   "FE-DEMO-2025": {
     id: "FE-DEMO-2025",
@@ -46,11 +44,7 @@ const MOCK_DB = {
   },
 };
 
-// ════════════════════════════════════════════════
-// SUB-COMPONENTS
-// ════════════════════════════════════════════════
-
-// ── Shield Logo ──
+// ── Sub Components ──
 function FatehLogo({ size = 32 }) {
   return (
     <svg width={size} height={size * 1.11} viewBox="0 0 36 40" fill="none">
@@ -62,11 +56,9 @@ function FatehLogo({ size = 32 }) {
   );
 }
 
-// ── Pulsing Orb (AI visual) ──
 function AIOrb({ active }) {
   return (
     <div style={{ position: "relative", width: 160, height: 160, display: "flex", alignItems: "center", justifyContent: "center" }}>
-      {/* Outer rings */}
       {[1, 2, 3].map((i) => (
         <div key={i} style={{
           position: "absolute",
@@ -78,11 +70,8 @@ function AIOrb({ active }) {
           animationDelay: `${i * 0.2}s`,
         }} />
       ))}
-      {/* Core */}
       <div style={{
-        width: 100,
-        height: 100,
-        borderRadius: "50%",
+        width: 100, height: 100, borderRadius: "50%",
         background: active
           ? "radial-gradient(circle, rgba(37,99,235,0.9) 0%, rgba(29,78,216,0.7) 40%, rgba(37,99,235,0.3) 100%)"
           : "radial-gradient(circle, rgba(37,99,235,0.35) 0%, rgba(29,78,216,0.2) 60%, transparent 100%)",
@@ -90,21 +79,15 @@ function AIOrb({ active }) {
           ? "0 0 60px rgba(37,99,235,0.7), 0 0 120px rgba(37,99,235,0.3), inset 0 0 30px rgba(147,197,253,0.3)"
           : "0 0 20px rgba(37,99,235,0.2)",
         transition: "all 0.6s ease",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
+        display: "flex", alignItems: "center", justifyContent: "center",
         animation: active ? "orbPulse 2s ease-in-out infinite" : "none",
       }}>
-        {/* Waveform bars */}
         <div style={{ display: "flex", gap: 3, alignItems: "center" }}>
           {[1, 2, 3, 4, 5].map((i) => (
             <div key={i} style={{
-              width: 3,
-              background: "rgba(255,255,255,0.9)",
-              borderRadius: 2,
+              width: 3, background: "rgba(255,255,255,0.9)", borderRadius: 2,
               animation: active ? `wave ${0.8 + i * 0.1}s ease-in-out infinite alternate` : "none",
-              animationDelay: `${i * 0.1}s`,
-              height: active ? undefined : 8,
+              animationDelay: `${i * 0.1}s`, height: active ? undefined : 8,
             }} />
           ))}
         </div>
@@ -113,118 +96,45 @@ function AIOrb({ active }) {
   );
 }
 
-// ── Phase field row ──
 function PhaseField({ label, value, filled, delay = 0 }) {
   return (
-    <div style={{
-      display: "flex",
-      flexDirection: "column",
-      gap: 2,
-      opacity: filled ? 1 : 0.35,
-      transition: `opacity 0.5s ease ${delay}s, transform 0.5s ease ${delay}s`,
-      transform: filled ? "translateX(0)" : "translateX(-6px)",
-    }}>
+    <div style={{ display: "flex", flexDirection: "column", gap: 2, opacity: filled ? 1 : 0.35, transition: `opacity 0.5s ease ${delay}s, transform 0.5s ease ${delay}s`, transform: filled ? "translateX(0)" : "translateX(-6px)" }}>
       <span style={{ fontSize: 9, textTransform: "uppercase", letterSpacing: "0.1em", color: "rgba(148,163,184,0.5)", fontFamily: T.fontBody }}>{label}</span>
-      <div style={{
-        fontSize: 12,
-        color: filled ? "#e2e8f0" : "rgba(100,116,139,0.6)",
-        fontFamily: T.fontBody,
-        background: filled ? "rgba(37,99,235,0.08)" : "rgba(255,255,255,0.03)",
-        border: filled ? "1px solid rgba(59,130,246,0.2)" : "1px solid rgba(255,255,255,0.06)",
-        padding: "5px 8px",
-        borderRadius: 6,
-        minHeight: 26,
-        transition: "all 0.4s ease",
-        whiteSpace: "nowrap",
-        overflow: "hidden",
-        textOverflow: "ellipsis",
-      }}>
+      <div style={{ fontSize: 12, color: filled ? "#e2e8f0" : "rgba(100,116,139,0.6)", fontFamily: T.fontBody, background: filled ? "rgba(37,99,235,0.08)" : "rgba(255,255,255,0.03)", border: filled ? "1px solid rgba(59,130,246,0.2)" : "1px solid rgba(255,255,255,0.06)", padding: "5px 8px", borderRadius: 6, minHeight: 26, transition: "all 0.4s ease", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
         {filled ? value : "—"}
       </div>
     </div>
   );
 }
 
-// ── Phase panel ──
 function PhasePanel({ phase, currentPhase, data }) {
   const isActive = currentPhase === phase;
   const isDone = currentPhase > phase;
   const label = ["Personal Info", "Academic Profile", "Readiness"][phase - 1];
   const color = isDone ? "#10b981" : isActive ? "#3b82f6" : "rgba(148,163,184,0.3)";
-
   const fields = {
-    1: [
-      { label: "Full Name", key: "name" },
-      { label: "Email", key: "email" },
-      { label: "Phone", key: "phone" },
-      { label: "Location", key: "location" },
-    ],
-    2: [
-      { label: "Education", key: "education" },
-      { label: "Field", key: "field" },
-      { label: "Institution", key: "institution" },
-      { label: "GPA / Score", key: "gpa" },
-      { label: "Target Countries", key: "countries" },
-      { label: "Course Interest", key: "course" },
-      { label: "Intake", key: "intake" },
-    ],
-    3: [
-      { label: "IELTS / TOEFL", key: "ielts" },
-      { label: "Budget", key: "budget" },
-      { label: "Timeline", key: "timeline" },
-      { label: "Sponsorship", key: "sponsorship" },
-    ],
+    1: [{ label: "Full Name", key: "name" }, { label: "Email", key: "email" }, { label: "Phone", key: "phone" }, { label: "Location", key: "location" }],
+    2: [{ label: "Education", key: "education" }, { label: "Field", key: "field" }, { label: "Institution", key: "institution" }, { label: "GPA / Score", key: "gpa" }, { label: "Target Countries", key: "countries" }, { label: "Course Interest", key: "course" }, { label: "Intake", key: "intake" }],
+    3: [{ label: "IELTS / TOEFL", key: "ielts" }, { label: "Budget", key: "budget" }, { label: "Timeline", key: "timeline" }, { label: "Sponsorship", key: "sponsorship" }],
   }[phase];
 
   return (
-    <div style={{
-      borderRadius: 16,
-      padding: "14px 16px",
-      background: isActive
-        ? "linear-gradient(135deg, rgba(37,99,235,0.1) 0%, rgba(37,99,235,0.03) 100%)"
-        : "linear-gradient(135deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.01) 100%)",
-      border: isActive ? "1px solid rgba(59,130,246,0.3)" : isDone ? "1px solid rgba(16,185,129,0.25)" : "1px solid rgba(255,255,255,0.06)",
-      backdropFilter: "blur(12px)",
-      transition: "all 0.4s ease",
-    }}>
-      {/* Phase header */}
+    <div style={{ borderRadius: 16, padding: "14px 16px", background: isActive ? "linear-gradient(135deg, rgba(37,99,235,0.1) 0%, rgba(37,99,235,0.03) 100%)" : "linear-gradient(135deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.01) 100%)", border: isActive ? "1px solid rgba(59,130,246,0.3)" : isDone ? "1px solid rgba(16,185,129,0.25)" : "1px solid rgba(255,255,255,0.06)", backdropFilter: "blur(12px)", transition: "all 0.4s ease" }}>
       <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
-        <div style={{
-          width: 20, height: 20, borderRadius: "50%",
-          background: isDone ? "#10b981" : isActive ? "#2563eb" : "rgba(255,255,255,0.08)",
-          border: `1px solid ${color}`,
-          display: "flex", alignItems: "center", justifyContent: "center",
-          fontSize: 9, fontWeight: 700, color: "#fff",
-          flexShrink: 0,
-        }}>
+        <div style={{ width: 20, height: 20, borderRadius: "50%", background: isDone ? "#10b981" : isActive ? "#2563eb" : "rgba(255,255,255,0.08)", border: `1px solid ${color}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 9, fontWeight: 700, color: "#fff", flexShrink: 0 }}>
           {isDone ? "✓" : phase}
         </div>
         <span style={{ fontSize: 11, fontWeight: 600, color, fontFamily: T.fontBody, letterSpacing: "0.05em" }}>{label}</span>
-        {isActive && (
-          <div style={{ marginLeft: "auto", display: "flex", gap: 2 }}>
-            {[1, 2, 3].map((i) => (
-              <div key={i} style={{ width: 4, height: 4, borderRadius: "50%", background: "#3b82f6", animation: `dotPulse 1.2s ease-in-out ${i * 0.2}s infinite` }} />
-            ))}
-          </div>
-        )}
       </div>
-      {/* Fields */}
-      <div style={{ display: "grid", gridTemplateColumns: phase === 2 ? "1fr 1fr" : "1fr 1fr", gap: "6px 10px" }}>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "6px 10px" }}>
         {fields.map((f, i) => (
-          <PhaseField
-            key={f.key}
-            label={f.label}
-            value={data[f.key]}
-            filled={isDone || (isActive && data[f.key])}
-            delay={i * 0.08}
-          />
+          <PhaseField key={f.key} label={f.label} value={data[f.key]} filled={isDone || (isActive && data[f.key])} delay={i * 0.08} />
         ))}
       </div>
     </div>
   );
 }
 
-// ── Score ring ──
 function ScoreRing({ score }) {
   const r = 42;
   const circ = 2 * Math.PI * r;
@@ -233,9 +143,7 @@ function ScoreRing({ score }) {
     <div style={{ position: "relative", width: 100, height: 100, display: "flex", alignItems: "center", justifyContent: "center" }}>
       <svg width="100" height="100" style={{ position: "absolute", transform: "rotate(-90deg)" }}>
         <circle cx="50" cy="50" r={r} fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="6" />
-        <circle cx="50" cy="50" r={r} fill="none" stroke={score >= 80 ? "#10b981" : score >= 60 ? "#f59e0b" : "#ef4444"}
-          strokeWidth="6" strokeDasharray={`${dash} ${circ}`} strokeLinecap="round"
-          style={{ transition: "stroke-dasharray 1.5s cubic-bezier(0.34, 1.56, 0.64, 1)" }} />
+        <circle cx="50" cy="50" r={r} fill="none" stroke={score >= 80 ? "#10b981" : score >= 60 ? "#f59e0b" : "#ef4444"} strokeWidth="6" strokeDasharray={`${dash} ${circ}`} strokeLinecap="round" style={{ transition: "stroke-dasharray 1.5s cubic-bezier(0.34, 1.56, 0.64, 1)" }} />
       </svg>
       <div style={{ textAlign: "center" }}>
         <div style={{ fontSize: 22, fontWeight: 800, color: "#fff", fontFamily: T.font, lineHeight: 1 }}>{score}</div>
@@ -245,18 +153,9 @@ function ScoreRing({ score }) {
   );
 }
 
-// ── Dashboard card ──
 function DashCard({ title, icon, children, accent }) {
   return (
-    <div style={{
-      borderRadius: 20,
-      padding: "20px 22px",
-      background: T.glass,
-      backdropFilter: "blur(20px)",
-      WebkitBackdropFilter: "blur(20px)",
-      border: accent ? `1px solid rgba(59,130,246,0.25)` : T.glassBorder,
-      boxShadow: T.glassShadow,
-    }}>
+    <div style={{ borderRadius: 20, padding: "20px 22px", background: T.glass, backdropFilter: "blur(20px)", border: accent ? `1px solid rgba(59,130,246,0.25)` : T.glassBorder, boxShadow: T.glassShadow }}>
       <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 16 }}>
         <span style={{ fontSize: 16 }}>{icon}</span>
         <span style={{ fontSize: 12, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.1em", color: "rgba(148,163,184,0.6)", fontFamily: T.fontBody }}>{title}</span>
@@ -270,34 +169,8 @@ function DataRow({ label, value, highlight }) {
   return (
     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", padding: "7px 0", borderBottom: "1px solid rgba(255,255,255,0.05)", gap: 12 }}>
       <span style={{ fontSize: 12, color: "rgba(148,163,184,0.55)", fontFamily: T.fontBody, flexShrink: 0 }}>{label}</span>
-      <span style={{
-        fontSize: 12, fontFamily: T.fontBody, textAlign: "right",
-        color: highlight ? "#60a5fa" : "#e2e8f0",
-        fontWeight: highlight ? 600 : 400,
-      }}>{value}</span>
+      <span style={{ fontSize: 12, fontFamily: T.fontBody, textAlign: "right", color: highlight ? "#60a5fa" : "#e2e8f0", fontWeight: highlight ? 600 : 400 }}>{value}</span>
     </div>
-  );
-}
-
-// ── Book Session Button ──
-function BookButton({ onOpen }) {
-  return (
-    <button
-      onClick={onOpen} // This tells it to open the modal
-      style={{
-        display: "inline-flex", alignItems: "center", gap: 10,
-        padding: "16px 36px", borderRadius: 16, border: "none", cursor: "pointer",
-        background: "linear-gradient(135deg, #2563eb, #1d4ed8)",
-        color: "#fff", fontSize: 15, fontWeight: 700,
-        boxShadow: "0 0 24px rgba(37,99,235,0.5)",
-        transition: "all 0.3s ease",
-      }}
-    >
-      Book a Session with Us!
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-        <path d="M5 12h14M12 5l7 7-7 7" />
-      </svg>
-    </button>
   );
 }
 
@@ -305,8 +178,7 @@ function BookButton({ onOpen }) {
 // MAIN COMPONENT
 // ════════════════════════════════════════════════
 export default function StudentView() {
-  // 1. Removed bookingOpen state as we are redirecting now
-  const [callState, setCallState] = useState("idle"); // idle | active | ended
+  const [callState, setCallState] = useState("idle");
   const [currentPhase, setCurrentPhase] = useState(0);
   const [phaseData, setPhaseData] = useState({});
   const [studentID, setStudentID] = useState("");
@@ -314,17 +186,13 @@ export default function StudentView() {
   const [dashData, setDashData] = useState(null);
   const [returnCode, setReturnCode] = useState("");
   const [codeError, setCodeError] = useState("");
-  
-  // 2. Added the navigate hook for redirection
   const navigate = useNavigate(); 
-  
   const [lang, setLang] = useState("EN");
   const [elapsed, setElapsed] = useState(0);
   const dashRef = useRef(null);
   const timerRef = useRef(null);
   const phaseTimers = useRef([]);
 
-  // ── Call timer ──
   useEffect(() => {
     if (callState === "active") {
       timerRef.current = setInterval(() => setElapsed((e) => e + 1), 1000);
@@ -336,27 +204,18 @@ export default function StudentView() {
 
   const fmt = (s) => `${String(Math.floor(s / 60)).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}`;
 
-  // ── Start call ──
   const handleStartCall = () => {
     setCallState("active");
     setCurrentPhase(1);
     setElapsed(0);
     setPhaseData({});
-
-    phaseTimers.current.push(setTimeout(() => {
-      setPhaseData((d) => ({ ...d, ...MOCK_DATA.phase1 }));
-    }, 2000));
+    phaseTimers.current.push(setTimeout(() => setPhaseData((d) => ({ ...d, ...MOCK_DATA.phase1 })), 2000));
     phaseTimers.current.push(setTimeout(() => setCurrentPhase(2), 5000));
-    phaseTimers.current.push(setTimeout(() => {
-      setPhaseData((d) => ({ ...d, ...MOCK_DATA.phase2 }));
-    }, 7000));
+    phaseTimers.current.push(setTimeout(() => setPhaseData((d) => ({ ...d, ...MOCK_DATA.phase2 })), 7000));
     phaseTimers.current.push(setTimeout(() => setCurrentPhase(3), 10000));
-    phaseTimers.current.push(setTimeout(() => {
-      setPhaseData((d) => ({ ...d, ...MOCK_DATA.phase3 }));
-    }, 12000));
+    phaseTimers.current.push(setTimeout(() => setPhaseData((d) => ({ ...d, ...MOCK_DATA.phase3 })), 12000));
   };
 
-  // ── End call ──
   const handleEndCall = () => {
     phaseTimers.current.forEach(clearTimeout);
     phaseTimers.current = [];
@@ -372,7 +231,6 @@ export default function StudentView() {
     }, 600);
   };
 
-  // ── Return code ──
   const handleReturnCode = () => {
     const d = MOCK_DB[returnCode.trim().toUpperCase()];
     if (d) {
@@ -390,166 +248,64 @@ export default function StudentView() {
     <>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Space+Grotesk:wght@300;400;500;600&display=swap');
-
         * { box-sizing: border-box; margin: 0; padding: 0; }
         ::-webkit-scrollbar { width: 5px; }
         ::-webkit-scrollbar-track { background: #030508; }
         ::-webkit-scrollbar-thumb { background: #1d4ed8; border-radius: 3px; }
-
-        @keyframes orbPulse {
-          0%, 100% { transform: scale(1); box-shadow: 0 0 60px rgba(37,99,235,0.7), 0 0 120px rgba(37,99,235,0.3); }
-          50% { transform: scale(1.06); box-shadow: 0 0 80px rgba(37,99,235,0.9), 0 0 160px rgba(37,99,235,0.4); }
-        }
-        @keyframes orbRing {
-          0%, 100% { transform: scale(1); opacity: 0.6; }
-          50% { transform: scale(1.12); opacity: 1; }
-        }
-        @keyframes wave {
-          from { height: 6px; }
-          to { height: 28px; }
-        }
-        @keyframes dotPulse {
-          0%, 100% { opacity: 0.3; transform: scale(0.8); }
-          50% { opacity: 1; transform: scale(1.2); }
-        }
-        @keyframes fadeUp {
-          from { opacity: 0; transform: translateY(24px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes slideIn {
-          from { opacity: 0; transform: translateY(40px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-
-        @keyframes callPulse {
-          0%, 100% { box-shadow: 0 0 0 0 rgba(37,99,235,0.5); }
-          50% { box-shadow: 0 0 0 12px rgba(37,99,235,0); }
-        }
-        @keyframes bookGlow {
-          0%, 100% { box-shadow: 0 0 24px rgba(37,99,235,0.5), 0 4px 24px rgba(0,0,0,0.4); }
-          50% { box-shadow: 0 0 48px rgba(37,99,235,0.8), 0 8px 32px rgba(0,0,0,0.5); }
-        }
-        @keyframes calFloat {
-          0%, 100% { transform: translateY(0) rotate(-4deg); }
-          50% { transform: translateY(-5px) rotate(-4deg); }
-        }
-        @keyframes gridMove {
-          from { background-position: 0 0; }
-          to { background-position: 48px 48px; }
-        }
-        @keyframes spin {
-          to { transform: rotate(360deg); }
-        }
-
+        @keyframes orbPulse { 0%, 100% { transform: scale(1); box-shadow: 0 0 60px rgba(37,99,235,0.7), 0 0 120px rgba(37,99,235,0.3); } 50% { transform: scale(1.06); box-shadow: 0 0 80px rgba(37,99,235,0.9), 0 0 160px rgba(37,99,235,0.4); } }
+        @keyframes orbRing { 0%, 100% { transform: scale(1); opacity: 0.6; } 50% { transform: scale(1.12); opacity: 1; } }
+        @keyframes wave { from { height: 6px; } to { height: 28px; } }
+        @keyframes dotPulse { 0%, 100% { opacity: 0.3; transform: scale(0.8); } 50% { opacity: 1; transform: scale(1.2); } }
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes callPulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(37,99,235,0.5); } 50% { box-shadow: 0 0 0 12px rgba(37,99,235,0); } }
+        @keyframes calFloat { 0%, 100% { transform: translateY(0) rotate(-4deg); } 50% { transform: translateY(-5px) rotate(-4deg); } }
         .fade-in { animation: fadeUp 0.6s ease both; }
         .slide-in { animation: slideIn 0.7s cubic-bezier(0.23, 1, 0.32, 1) both; }
-        .start-btn:hover { transform: scale(1.04) !important; }
-        .end-btn:hover { transform: scale(1.04) !important; }
-        .lang-btn:hover { background: rgba(37,99,235,0.2) !important; color: #93c5fd !important; }
-        .code-submit:hover { background: #2563eb !important; }
-
-        /* Mobile responsive */
-        @media (max-width: 768px) {
-          .agent-grid { flex-direction: column !important; }
-          .phases-panel { width: 100% !important; max-height: 360px; overflow-y: auto; }
-          .dash-grid-4 { grid-template-columns: 1fr 1fr !important; }
-          .dash-grid-3 { grid-template-columns: 1fr !important; }
-          .orb-wrap { width: 120px !important; height: 120px !important; }
-          .controls-row { flex-wrap: wrap !important; gap: 10px !important; }
-        }
-        @media (max-width: 480px) {
-          .dash-grid-4 { grid-template-columns: 1fr !important; }
-          .hero-pad { padding: 20px 16px !important; }
-          .header-inner { padding: 12px 16px !important; }
-        }
       `}</style>
 
       <div style={{ background: T.bgGrad, minHeight: "100vh", fontFamily: T.fontBody, position: "relative", overflowX: "hidden" }}>
-
-        {/* Grid bg */}
-        <div style={{
-          position: "fixed", inset: 0, pointerEvents: "none", zIndex: 0,
-          backgroundImage: "linear-gradient(rgba(37,99,235,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(37,99,235,0.05) 1px, transparent 1px)",
-          backgroundSize: "48px 48px",
-          maskImage: "radial-gradient(ellipse 80% 70% at 50% 0%, black 20%, transparent 100%)",
-          WebkitMaskImage: "radial-gradient(ellipse 80% 70% at 50% 0%, black 20%, transparent 100%)",
-        }} />
-        {/* Orb */}
-        <div style={{ position: "fixed", width: 480, height: 480, borderRadius: "50%", background: "radial-gradient(circle, rgba(37,99,235,0.12) 0%, transparent 70%)", top: -100, left: "5%", filter: "blur(60px)", pointerEvents: "none", zIndex: 0 }} />
-
-        {/* ── HEADER ── */}
-        <header style={{ position: "sticky", top: 0, zIndex: 100, background: "rgba(6,11,20,0.85)", backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)", borderBottom: "1px solid rgba(255,255,255,0.07)" }}>
-          <div className="header-inner" style={{ maxWidth: 1200, margin: "0 auto", padding: "12px 28px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
+        <div style={{ position: "fixed", inset: 0, pointerEvents: "none", zIndex: 0, backgroundImage: "linear-gradient(rgba(37,99,235,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(37,99,235,0.05) 1px, transparent 1px)", backgroundSize: "48px 48px", maskImage: "radial-gradient(ellipse 80% 70% at 50% 0%, black 20%, transparent 100%)" }} />
+        <header style={{ position: "sticky", top: 0, zIndex: 100, background: "rgba(6,11,20,0.85)", backdropFilter: "blur(20px)", borderBottom: "1px solid rgba(255,255,255,0.07)" }}>
+          <div className="header-inner" style={{ maxWidth: 1200, margin: "0 auto", padding: "12px 28px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
             <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
               <FatehLogo size={30} />
               <div>
-                <div style={{ color: "#fff", fontFamily: T.font, fontWeight: 700, fontSize: 14, letterSpacing: "-0.01em", lineHeight: 1.2 }}>FATEH</div>
+                <div style={{ color: "#fff", fontFamily: T.font, fontWeight: 700, fontSize: 14 }}>FATEH</div>
                 <div style={{ color: "#3b82f6", fontSize: 9, letterSpacing: "0.1em" }}>EDUCATION</div>
               </div>
             </div>
-
-            <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap", justifyContent: "flex-end" }}>
-              {/* Latency badge */}
-              <div style={{ display: "flex", alignItems: "center", gap: 5, padding: "4px 10px", borderRadius: 100, background: "rgba(16,185,129,0.1)", border: "1px solid rgba(16,185,129,0.22)" }}>
-                <div style={{ width: 5, height: 5, borderRadius: "50%", background: "#10b981", boxShadow: "0 0 6px #10b981" }} />
-                <span style={{ fontSize: 10, color: "#6ee7b7", fontWeight: 600, letterSpacing: "0.05em" }}>&lt;3s response</span>
+            {callState === "active" && (
+              <div style={{ display: "flex", alignItems: "center", gap: 6, padding: "4px 12px", borderRadius: 100, background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.25)" }}>
+                <div style={{ width: 6, height: 6, borderRadius: "50%", background: "#ef4444", animation: "callPulse 1.5s infinite" }} />
+                <span style={{ fontSize: 11, color: "#fca5a5", fontWeight: 600 }}>LIVE · {fmt(elapsed)}</span>
               </div>
-              {/* Language selector */}
-              <div style={{ display: "flex", gap: 2, background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 8, padding: 2 }}>
-                {["EN", "HI", "MR"].map((l) => (
-                  <button key={l} className="lang-btn" onClick={() => setLang(l)} style={{
-                    padding: "4px 10px", borderRadius: 6, border: "none", cursor: "pointer",
-                    fontSize: 10, fontWeight: 600, letterSpacing: "0.08em", fontFamily: T.fontBody,
-                    background: lang === l ? "rgba(37,99,235,0.35)" : "transparent",
-                    color: lang === l ? "#93c5fd" : "rgba(148,163,184,0.5)",
-                    transition: "all 0.2s ease",
-                  }}>{l}</button>
-                ))}
-              </div>
-              {/* Call status */}
-              {callState === "active" && (
-                <div style={{ display: "flex", alignItems: "center", gap: 6, padding: "4px 12px", borderRadius: 100, background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.25)" }}>
-                  <div style={{ width: 6, height: 6, borderRadius: "50%", background: "#ef4444", animation: "callPulse 1.5s infinite" }} />
-                  <span style={{ fontSize: 11, color: "#fca5a5", fontWeight: 600 }}>LIVE · {fmt(elapsed)}</span>
-                </div>
-              )}
-            </div>
+            )}
           </div>
         </header>
 
         <main style={{ position: "relative", zIndex: 1 }}>
-
-          {/* ── SECTION 1 — VOICE AGENT ── */}
           <section className="hero-pad" style={{ maxWidth: 1200, margin: "0 auto", padding: "36px 28px 48px" }}>
-            {/* Returning user bar */}
-            <div className="fade-in" style={{ marginBottom: 32, animationDelay: "0.05s" }}>
-              <div style={{ borderRadius: 16, padding: "14px 20px", background: T.glass, backdropFilter: "blur(20px)", border: T.glassBorder, boxShadow: T.glassShadow, display: "flex", alignItems: "center", flexWrap: "wrap", gap: 12 }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 8, flex: "0 0 auto" }}>
-                  <span style={{ fontSize: 16 }}>🔑 Already registered?</span>
-                </div>
-                <div style={{ flex: 1, minWidth: 200, display: "flex", gap: 8 }}>
-                  <input value={returnCode} onChange={(e) => { setReturnCode(e.target.value); setCodeError(""); }} onKeyDown={(e) => e.key === "Enter" && handleReturnCode()} placeholder="Enter unique code" style={{ flex: 1, background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 10, padding: "9px 14px", color: "#e2e8f0", outline: "none" }} />
-                  <button className="code-submit" onClick={handleReturnCode} style={{ background: "rgba(37,99,235,0.25)", border: "1px solid rgba(59,130,246,0.35)", color: "#93c5fd", padding: "9px 18px", borderRadius: 10, cursor: "pointer", fontWeight: 600 }}>Access →</button>
-                </div>
+            <div className="fade-in" style={{ marginBottom: 32 }}>
+              <div style={{ borderRadius: 16, padding: "14px 20px", background: T.glass, backdropFilter: "blur(20px)", border: T.glassBorder, display: "flex", alignItems: "center", gap: 12 }}>
+                <span style={{ fontSize: 16 }}>🔑 Already registered?</span>
+                <input value={returnCode} onChange={(e) => setReturnCode(e.target.value)} placeholder="Enter unique code" style={{ flex: 1, background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 10, padding: "9px 14px", color: "#e2e8f0" }} />
+                <button onClick={handleReturnCode} style={{ background: "rgba(37,99,235,0.25)", border: "1px solid rgba(59,130,246,0.35)", color: "#93c5fd", padding: "9px 18px", borderRadius: 10, cursor: "pointer" }}>Access →</button>
               </div>
             </div>
 
-            <div className="agent-grid" style={{ display: "flex", gap: 20, alignItems: "flex-start" }}>
-              {/* Left: Orb + controls */}
-              <div className="fade-in" style={{ flex: "0 0 auto", width: "min(100%, 340px)", borderRadius: 24, padding: "32px 24px", background: T.glass, border: T.glassBorder, boxShadow: T.glassShadow, display: "flex", flexDirection: "column", alignItems: "center", gap: 24 }}>
+            <div className="agent-grid" style={{ display: "flex", gap: 20 }}>
+              <div style={{ flex: "0 0 auto", width: "min(100%, 340px)", borderRadius: 24, padding: "32px 24px", background: T.glass, border: T.glassBorder, display: "flex", flexDirection: "column", alignItems: "center", gap: 24 }}>
                 <AIOrb active={callState === "active"} />
-                <div className="controls-row" style={{ display: "flex", gap: 12, width: "100%", justifyContent: "center" }}>
-                  {callState === "idle" && (
-                    <button onClick={handleStartCall} style={{ flex: 1, padding: "14px 20px", borderRadius: 14, background: "linear-gradient(135deg, #059669, #047857)", color: "#fff", fontWeight: 700, cursor: "pointer", border: "none" }}>Start Call</button>
-                  )}
-                  {callState === "active" && (
-                    <button onClick={handleEndCall} style={{ flex: 1, padding: "14px 20px", borderRadius: 14, background: "linear-gradient(135deg, #dc2626, #b91c1c)", color: "#fff", fontWeight: 700, border: "none", cursor: "pointer" }}>End Call</button>
+                <div className="controls-row" style={{ display: "flex", gap: 12, width: "100%" }}>
+                  {callState !== "active" ? (
+                    <button onClick={handleStartCall} className="start-btn" style={{ flex: 1, padding: "14px", borderRadius: 14, background: "linear-gradient(135deg, #059669, #047857)", color: "#fff", fontWeight: 700, border: "none", cursor: "pointer" }}>Start Call</button>
+                  ) : (
+                    <button onClick={handleEndCall} className="end-btn" style={{ flex: 1, padding: "14px", borderRadius: 14, background: "linear-gradient(135deg, #dc2626, #b91c1c)", color: "#fff", fontWeight: 700, border: "none", cursor: "pointer" }}>End Call</button>
                   )}
                 </div>
               </div>
-
-              {/* Right: Extraction phases */}
-              <div className="phases-panel fade-in" style={{ flex: 1, display: "flex", flexDirection: "column", gap: 12 }}>
+              <div className="phases-panel" style={{ flex: 1, display: "flex", flexDirection: "column", gap: 12 }}>
                 <PhasePanel phase={1} currentPhase={currentPhase} data={phaseData} />
                 <PhasePanel phase={2} currentPhase={currentPhase} data={phaseData} />
                 <PhasePanel phase={3} currentPhase={currentPhase} data={phaseData} />
@@ -557,13 +313,10 @@ export default function StudentView() {
             </div>
           </section>
 
-          {/* ── SECTION 2 — STUDENT OVERVIEW ── */}
           {showDashboard && dashData && (
             <section ref={dashRef} className="slide-in" style={{ maxWidth: 1200, margin: "0 auto", padding: "0 28px 60px" }}>
-              <div style={{ marginBottom: 28, display: "flex", flexWrap: "wrap", alignItems: "flex-start", justifyContent: "space-between", gap: 20 }}>
-                <div>
-                  <h2 style={{ fontFamily: T.font, fontWeight: 800, fontSize: "clamp(24px, 4vw, 38px)", color: "#fff" }}>{dashData.name}</h2>
-                </div>
+              <div style={{ marginBottom: 28, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <h2 style={{ fontFamily: T.font, fontWeight: 800, fontSize: 32, color: "#fff" }}>{dashData.name} Profile</h2>
                 <ScoreRing score={dashData.score} />
               </div>
 
@@ -573,22 +326,22 @@ export default function StudentView() {
                 <DashCard title="Study Preferences" icon="🌍"><DataRow label="Target" value={dashData.countries} highlight /><DataRow label="Budget" value={dashData.budget} /></DashCard>
               </div>
 
-              {/* ── REDIRECT BOOKING AREA ── */}
-              <div style={{ marginTop: 28, borderRadius: 24, padding: "48px 40px", textAlign: "center", background: "linear-gradient(135deg, rgba(37,99,235,0.14) 0%, rgba(29,78,216,0.08) 50%, rgba(5,150,105,0.08) 100%)", border: "1px solid rgba(59,130,246,0.25)", boxShadow: T.glassShadow, backdropFilter: "blur(24px)" }}>
+              {/* ── UPDATED REDIRECT SECTION ── */}
+              <div style={{ marginTop: 28, borderRadius: 24, padding: "48px 40px", textAlign: "center", background: "linear-gradient(135deg, rgba(37,99,235,0.14) 0%, rgba(29,78,216,0.08) 50%, rgba(5,150,105,0.08) 100%)", border: "1px solid rgba(59,130,246,0.25)", backdropFilter: "blur(24px)" }}>
                 <span style={{ fontSize: 40, display: "block", marginBottom: 16, animation: "calFloat 4s ease-in-out infinite" }}>📅</span>
                 <h2 style={{ fontFamily: T.font, fontWeight: 800, fontSize: "clamp(22px, 3.5vw, 34px)", color: "#fff", marginBottom: 10 }}>Ready to take the next step?</h2>
-                <p style={{ fontSize: 14, color: "rgba(148,163,184,0.6)", maxWidth: 460, margin: "0 auto 28px", lineHeight: 1.65 }}>Speak directly with a Fateh expert counsellor who will review your profile and map out your roadmap.</p>
+                <p style={{ fontSize: 14, color: "rgba(148,163,184,0.6)", maxWidth: 460, margin: "0 auto 28px", lineHeight: 1.65 }}>View your personalized scholarships based on your academic profile before booking your session.</p>
                 
-                {/* REPLACED: Redirection Button */}
+                {/* BUTTON REDIRECTS TO SCHOLARSHIP PAGE FIRST */}
                 <button 
-                  onClick={() => navigate('/book')} 
+                  onClick={() => navigate('/scholarships', { state: { gpa: dashData?.gpa } })} 
                   style={{ padding: "16px 36px", borderRadius: 16, background: "linear-gradient(135deg, #2563eb, #1d4ed8)", color: "#fff", fontSize: 15, fontWeight: 700, cursor: "pointer", border: "none", boxShadow: "0 0 24px rgba(37,99,235,0.5)" }}
                 >
-                  Book a Counselling Session With Us!
+                  Check My Scholarship Eligibility →
                 </button>
 
                 <div style={{ display: "flex", justifyContent: "center", gap: 24, marginTop: 22 }}>
-                  {["Free consultation", "Expert counsellors"].map((f) => (
+                  {["Free consultation", "Scholarship estimate"].map((f) => (
                     <div key={f} style={{ display: "flex", alignItems: "center", gap: 6 }}>
                       <div style={{ width: 5, height: 5, borderRadius: "50%", background: "#10b981", boxShadow: "0 0 5px #10b981" }} />
                       <span style={{ fontSize: 12, color: "rgba(148,163,184,0.5)" }}>{f}</span>
@@ -603,10 +356,3 @@ export default function StudentView() {
     </>
   );
 }
-
-/* ─────────────────────────────────────────────
-   PATCH: Add BookSession component and insert it
-   into the dashboard section after the export bar.
-   Replace the export bar closing tag area with the
-   updated block below in your StudentView.jsx.
-   ───────────────────────────────────────────── */
