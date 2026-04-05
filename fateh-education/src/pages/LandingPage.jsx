@@ -288,6 +288,8 @@ function TrustBar() {
 // ── Main Export ──
 export default function LandingPage() {
   const [scrolled, setScrolled] = useState(false);
+  const navigate = useNavigate(); // <-- Added navigation hook here
+
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
     window.addEventListener("scroll", onScroll);
@@ -315,7 +317,7 @@ export default function LandingPage() {
           .cards-grid{flex-direction:column!important}
           .or-divider{display:none!important}
           .stats-grid{grid-template-columns:repeat(2,1fr)!important}
-          nav a{display:none}
+          nav a, nav span.nav-link {display:none}
         }
       `}</style>
 
@@ -362,11 +364,28 @@ export default function LandingPage() {
                 </div>
               </div>
               <nav style={{ display: "flex", alignItems: "center", gap: 24 }}>
-                {["About", "Universities", "Services", "Contact"].map((n) => (
+                
+                {/* ── UPDATED FAQ LINK ── */}
+                <a 
+                  href="/faqs"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    navigate('/faqs');
+                  }}
+                  style={{ color: "rgba(255,255,255,0.8)", fontSize: 13, textDecoration: "none", transition: "color 0.2s", fontWeight: 500, cursor: "pointer" }}
+                  onMouseEnter={(e) => (e.target.style.color = "#60a5fa")}
+                  onMouseLeave={(e) => (e.target.style.color = "rgba(255,255,255,0.8)")}
+                >
+                  FAQs
+                </a>
+
+                {/* The rest of the static links */}
+                {["Universities", "Services", "Contact"].map((n) => (
                   <a key={n} href="#" style={{ color: "rgba(255,255,255,0.8)", fontSize: 13, textDecoration: "none", transition: "color 0.2s", fontWeight: 500 }}
                     onMouseEnter={(e) => (e.target.style.color = "#60a5fa")}
                     onMouseLeave={(e) => (e.target.style.color = "rgba(255,255,255,0.8)")}>{n}</a>
                 ))}
+                
                 <button style={{ background: "rgba(255,255,255,0.1)", backdropFilter: "blur(10px)", border: "1px solid rgba(255,255,255,0.2)", color: "#fff", fontSize: 13, padding: "7px 16px", borderRadius: 10, cursor: "pointer", fontFamily: "'Space Grotesk', sans-serif", transition: "all 0.25s" }}
                   onMouseEnter={(e) => { e.target.style.background = "#2563eb"; e.target.style.borderColor = "#2563eb"; }}
                   onMouseLeave={(e) => { e.target.style.background = "rgba(255,255,255,0.1)"; e.target.style.borderColor = "rgba(255,255,255,0.2)"; }}>

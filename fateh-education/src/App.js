@@ -8,13 +8,18 @@ import CounsellorBookingFlow from './pages/CounsellorBookingFlow';
 import CounsellorLogin from './pages/CounsellorLogin';
 import CounsellorDashboard from './pages/CounsellorDashboard';
 import CGPAScholarshipRecommender from './pages/CGPAScholarshipRecommender';
+import StudentAIOutputReport from './pages/StudentAIOutputReport';
+import KnowledgeBaseFAQ from './pages/KnowledgeBaseFAQ'; // <-- ADDED IMPORT
 
 function App() {
   return (
     <Router>
       <Routes>
-        {/* Main Landing Page (which now has the 3D globe video background!) */}
+        {/* Main Landing Page */}
         <Route path="/" element={<LandingPage />} />
+        
+        {/* Shared / General Pages */}
+        <Route path="/faqs" element={<KnowledgeBaseFAQ />} /> {/* <-- ADDED ROUTE */}
         
         {/* Student Flow */}
         <Route path="/student" element={<StudentView />} />
@@ -27,6 +32,7 @@ function App() {
           path="/counsellor-dashboard" 
           element={<CounsellorDashboard onLogout={() => window.location.href = '/'} />} 
         />
+        <Route path="/report" element={<StudentAIOutputReport />} /> 
       </Routes>
     </Router>
   );

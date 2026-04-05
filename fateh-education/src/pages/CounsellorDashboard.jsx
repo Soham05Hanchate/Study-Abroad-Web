@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 
 /*
   CounsellorDashboard.jsx  –  Fateh Education Platform
@@ -523,8 +524,10 @@ function MetricCard({ icon, label, value, color, glow, subtitle }) {
 
 /** Student detail modal */
 function DetailModal({ student, onClose }) {
+  const navigate = useNavigate(); // <-- Added navigation hook here
   const t = TIER[student.tier];
   const backdropRef = useRef(null);
+  
   useEffect(() => {
     const h = (e) => { if (e.key === "Escape") onClose(); };
     window.addEventListener("keydown", h);
@@ -614,8 +617,11 @@ function DetailModal({ student, onClose }) {
             <button style={{ flex: 1, padding: "12px", borderRadius: 12, border: "none", background: `linear-gradient(135deg,${t.color},${t.colorDark})`, color: "#fff", fontSize: 13, fontWeight: 700, fontFamily: "'DM Sans',sans-serif", cursor: "pointer", boxShadow: `0 0 20px ${t.glow}0.4)` }}>
               📞 Call Now
             </button>
-            <button style={{ flex: 1, padding: "12px", borderRadius: 12, border: `1px solid ${t.border}`, background: t.badgeBg, color: t.scoreColor, fontSize: 13, fontWeight: 600, fontFamily: "'DM Sans',sans-serif", cursor: "pointer" }}>
-              📤 Export JSON
+            <button 
+              onClick={() => navigate('/report')} // <-- Hooked up navigation to the report page
+              style={{ flex: 1, padding: "12px", borderRadius: 12, border: `1px solid ${t.border}`, background: t.badgeBg, color: t.scoreColor, fontSize: 13, fontWeight: 600, fontFamily: "'DM Sans',sans-serif", cursor: "pointer" }}
+            >
+              📤 View Detailed Report
             </button>
           </div>
         </div>
