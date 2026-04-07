@@ -15,7 +15,7 @@ const counsellorRoutes = require("./routes/counsellorRoutes");
 const dataRoutes = require("./routes/dataRoutes");
 
 const app = express();
-const PORT = Number(process.env.PORT) || 5000;
+const PORT = Number(process.env.PORT) || 8080;
 const publicDir = path.join(__dirname, "public");
 const allowedOrigins = (process.env.CORS_ORIGIN || "")
   .split(",")
