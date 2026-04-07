@@ -825,7 +825,7 @@ export default function CounsellorDashboard({ counsellorName = "Dr. Aarav Mehta"
                 { key: "cold", label: "❄️ Cold", color: "#22d3ee" },
               ].map(f => (
                 <button key={f.key} onClick={() => setFilterTier(f.key)} style={{
-                  padding: "8px 14px", borderRadius: 9, border: "none", cursor: "pointer",
+                  padding: "8px 14px", borderRadius: 9, cursor: "pointer",
                   fontSize: 12, fontWeight: 600, fontFamily: "'DM Sans',sans-serif",
                   background: filterTier === f.key ? `${f.color}22` : "rgba(255,255,255,.05)",
                   color: filterTier === f.key ? f.color : "rgba(148,163,184,.5)",

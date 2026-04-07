@@ -394,7 +394,7 @@ function SlotPicker({ counsellor: c, onConfirm, onBack }) {
               return (
                 <button key={slot} onClick={() => setActiveSlot(slot)}
                   style={{
-                    padding:"16px 10px", borderRadius:14, border:"none",
+                    padding:"16px 10px", borderRadius:14,
                     cursor:"pointer", fontFamily:DT.body, fontSize:16,
                     fontWeight: sel ? 700 : 500,
                     background: sel

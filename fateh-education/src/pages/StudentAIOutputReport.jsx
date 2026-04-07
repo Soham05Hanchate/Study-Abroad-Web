@@ -1,6 +1,6 @@
-import { useState, useRef } from "react";
+import { useState } from "react";
 import {
-  Phone, Copy, Check, ChevronRight, FileText, Code2,
+  Phone, Copy, Check, FileText, Code2,
   User, Mic, BookOpen, MapPin, Mail, Globe, GraduationCap,
   DollarSign, Calendar, Clock, Target, Zap, Flame,
   Snowflake, Star, ArrowRight, MessageSquare, AlertCircle
@@ -182,10 +182,6 @@ const TIER_CFG = {
 /* ═══════════════════════════════════════════════════════════════
    HELPERS
 ═══════════════════════════════════════════════════════════════ */
-function glass(extra = "") {
-  return `backdrop-blur-xl bg-white/[.04] border border-white/[.08] rounded-2xl ${extra}`;
-}
-
 function ScoreRing({ score, max, color, size = 80 }) {
   const r = (size - 10) / 2;
   const circ = 2 * Math.PI * r;
@@ -258,7 +254,7 @@ function SectionTitle({ label }) {
 function highlightJson(json) {
   return json
     .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
-    .replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, (match) => {
+    .replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+-]?\d+)?)/g, (match) => {
       let cls = "json-num";
       if (/^"/.test(match)) cls = /:$/.test(match) ? "json-key" : "json-str";
       else if (/true|false/.test(match)) cls = "json-bool";

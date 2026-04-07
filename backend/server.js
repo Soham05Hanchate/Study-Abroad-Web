@@ -17,6 +17,10 @@ const dataRoutes = require("./routes/dataRoutes");
 const app = express();
 const PORT = Number(process.env.PORT) || 5000;
 const publicDir = path.join(__dirname, "public");
+const allowedOrigins = (process.env.CORS_ORIGIN || "")
+  .split(",")
+  .map((origin) => origin.trim())
+  .filter(Boolean);
 
 
 
@@ -26,7 +30,12 @@ if (!process.env.GROQ_API_KEY) {
 
 app.use(
   cors({
-    origin: true,
+    origin(origin, callback) {
+      if (!origin || allowedOrigins.length === 0 || allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+      return callback(new Error("CORS origin not allowed"));
+    },
     methods: ["GET", "POST", "PATCH", "PUT", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Accept", "Authorization", "X-API-Key"]
   })

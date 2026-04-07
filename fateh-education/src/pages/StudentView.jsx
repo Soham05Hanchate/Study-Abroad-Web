@@ -395,7 +395,7 @@ export default function StudentView() {
    * @param {{ skipResume?: boolean, uiLang?: 'EN'|'HI'|'MR', forceUiLocale?: boolean }} [opts]
    * forceUiLocale + uiLang: opening greeting. Otherwise uiLang steers Devanagari replies (MR vs HI).
    */
-  const speakText = (text, opts = {}) =>
+  const speakText = useCallback((text, opts = {}) =>
     new Promise((resolve) => {
       const skipResume = opts.skipResume === true;
       const done = () => {
@@ -456,7 +456,7 @@ export default function StudentView() {
           done();
         }
       })();
-    });
+    }), []);
 
   const runUserMessage = useCallback(async (raw) => {
     const text = (raw || "").trim();
@@ -480,7 +480,7 @@ export default function StudentView() {
       sendingRef.current = false;
       setChatLoading(false);
     }
-  }, []);
+  }, [speakText]);
 
   const stopRecognition = () => {
     ttsPlayingRef.current = false;

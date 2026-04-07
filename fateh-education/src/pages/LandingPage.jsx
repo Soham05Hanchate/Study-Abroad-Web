@@ -381,9 +381,15 @@ export default function LandingPage() {
 
                 {/* The rest of the static links */}
                 {["Universities", "Services", "Contact"].map((n) => (
-                  <a key={n} href="#" style={{ color: "rgba(255,255,255,0.8)", fontSize: 13, textDecoration: "none", transition: "color 0.2s", fontWeight: 500 }}
+                  <button
+                    key={n}
+                    type="button"
+                    style={{ color: "rgba(255,255,255,0.8)", fontSize: 13, textDecoration: "none", transition: "color 0.2s", fontWeight: 500, background: "transparent", border: "none", padding: 0, cursor: "pointer", fontFamily: "'Space Grotesk', sans-serif" }}
                     onMouseEnter={(e) => (e.target.style.color = "#60a5fa")}
-                    onMouseLeave={(e) => (e.target.style.color = "rgba(255,255,255,0.8)")}>{n}</a>
+                    onMouseLeave={(e) => (e.target.style.color = "rgba(255,255,255,0.8)")}
+                  >
+                    {n}
+                  </button>
                 ))}
                 
                 <button style={{ background: "rgba(255,255,255,0.1)", backdropFilter: "blur(10px)", border: "1px solid rgba(255,255,255,0.2)", color: "#fff", fontSize: 13, padding: "7px 16px", borderRadius: 10, cursor: "pointer", fontFamily: "'Space Grotesk', sans-serif", transition: "all 0.25s" }}
@@ -445,9 +451,15 @@ export default function LandingPage() {
               </div>
               <div style={{ display: "flex", gap: 20 }}>
                 {["Privacy Policy", "Terms of Service", "Contact Us"].map((l) => (
-                  <a key={l} href="#" style={{ fontSize: 11, color: "rgba(255,255,255,0.5)", textDecoration: "none", transition: "color 0.2s" }}
+                  <button
+                    key={l}
+                    type="button"
+                    style={{ fontSize: 11, color: "rgba(255,255,255,0.5)", textDecoration: "none", transition: "color 0.2s", background: "transparent", border: "none", padding: 0, cursor: "pointer", fontFamily: "'Space Grotesk', sans-serif" }}
                     onMouseEnter={(e) => (e.target.style.color = "#fff")}
-                    onMouseLeave={(e) => (e.target.style.color = "rgba(255,255,255,0.5)")}>{l}</a>
+                    onMouseLeave={(e) => (e.target.style.color = "rgba(255,255,255,0.5)")}
+                  >
+                    {l}
+                  </button>
                 ))}
               </div>
               <p style={{ fontSize: 11, color: "rgba(255,255,255,0.4)" }}>© {new Date().getFullYear()} Fateh Education. All rights reserved.</p>
